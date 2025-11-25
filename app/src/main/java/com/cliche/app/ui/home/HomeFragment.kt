@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.cliche.app.databinding.FragmentHomeBinding
+import com.cliche.app.models.Post
 import com.cliche.app.modules.supabaseClient
+import com.cliche.app.services.auth.AuthManager
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
@@ -42,9 +44,15 @@ class HomeFragment : Fragment() {
         // Set click listener on the button instead of using android:onClick in XML
         binding.button.setOnClickListener {
             lifecycleScope.launch {
-                val result = supabaseClient.from("test").select().data
-                // Make sure we pass a String to the Toast
+                val result = supabaseClient.from("posts").select().decodeList<Post>();
                 Toast.makeText(requireContext(), result.toString(), Toast.LENGTH_LONG).show()
+            }
+        }
+
+        // Handle disconnect button click
+        binding.button2.setOnClickListener {
+            lifecycleScope.launch {
+                AuthManager.signOut(requireContext())
             }
         }
 
