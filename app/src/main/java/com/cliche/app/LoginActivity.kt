@@ -24,6 +24,11 @@ class LoginActivity : AppCompatActivity() {
         val loadingScreen = findViewById<View>(R.id.loadingScreen)
         val loginForm = findViewById<View>(R.id.loginForm)
 
+        val skipLoginBtn = findViewById<Button>(R.id.skipLoginBtn)
+        skipLoginBtn.setOnClickListener {
+            startMainActivity()
+        }
+
         // First, wait for auth system to be ready and check if user is already logged in
         lifecycleScope.launch {
             AuthManager.waitToBeReady()
