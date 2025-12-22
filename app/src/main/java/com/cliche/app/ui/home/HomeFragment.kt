@@ -12,10 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cliche.app.databinding.FragmentHomeBinding
 import com.cliche.app.models.Post
-import com.cliche.app.modules.supabaseClient
-import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.Order
+import com.cliche.app.models.TimelinePost
+import com.cliche.app.services.api.PostApi
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
@@ -41,14 +39,63 @@ class HomeFragment : Fragment() {
         val root: View = binding.root
 
         setupRecyclerView()
-        // load first page
         fetchPosts()
 
         return root
     }
 
+    private fun clearItems() {
+        postsAdapter.clear()
+        isLastPage = false
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        // Effacer les données avant de recharger les données (quand lose focus)
+        clearItems()
+    };
+
     private fun setupRecyclerView() {
-        postsAdapter = PostsAdapter(mutableListOf())
+        postsAdapter = PostsAdapter(mutableListOf(), object : PostsAdapter.OnPostActionListener {
+            override fun onLike(post: TimelinePost) {
+                Toast.makeText(requireContext(), "Liked post ${post.id}", Toast.LENGTH_SHORT).show()
+                Log.d("HomeFragment", "onLike: ${post.id}")
+
+                lifecycleScope.launch {
+                    if(post.user_has_liked) {
+                        PostApi.removeLike(post.id)
+                        post.user_has_liked = false
+                        post.likes_count -= 1
+                    } else {
+                        PostApi.addLike(post.id)
+                        post.user_has_liked = true
+                        post.likes_count += 1
+                    }
+                }
+            }
+
+            override fun onComment(post: TimelinePost) {
+                Toast.makeText(requireContext(), "Comment on post ${post.id}", Toast.LENGTH_SHORT).show()
+                Log.d("HomeFragment", "onComment: ${post.id}")
+            }
+
+            override fun onShare(post: TimelinePost) {
+                Toast.makeText(requireContext(), "Share post ${post.id}", Toast.LENGTH_SHORT).show()
+                Log.d("HomeFragment", "onShare: ${post.id}")
+            }
+
+            override fun onBookmark(post: TimelinePost) {
+                Toast.makeText(requireContext(), "Bookmarked post ${post.id}", Toast.LENGTH_SHORT).show()
+                Log.d("HomeFragment", "onBookmark: ${post.id}")
+            }
+
+            override fun onItemClick(post: TimelinePost) {
+                Toast.makeText(requireContext(), "Open post ${post.id}", Toast.LENGTH_SHORT).show()
+                Log.d("HomeFragment", "onItemClick: ${post.id}")
+            }
+        })
+
         val recycler = binding.recyclerView
         val layoutManager = LinearLayoutManager(requireContext())
         recycler.layoutManager = layoutManager
@@ -78,6 +125,8 @@ class HomeFragment : Fragment() {
         isLoading = true
 
         lifecycleScope.launch {
+            binding.statusText.visibility = View.GONE
+
             try {
                 val alreadyLoaded = postsAdapter.itemCount
                 val start = alreadyLoaded
@@ -85,23 +134,13 @@ class HomeFragment : Fragment() {
 
                 Log.d("HomeFragment", "Fetching posts from $start to $end")
 
-                val columns = Columns.raw("*, owner:profiles(username, avatar_url)")
-
-                val postsResponse = supabaseClient
-                    .from("posts")
-                    .select(
-                        columns = columns,
-                        request = {
-                            order("created_at", Order.DESCENDING)
-                            range(start.toLong(), end.toLong())
-                        })
-
-                Log.d("HomeFragment", "Posts response: ${postsResponse.data}")
-
-                val posts: List<Post> = postsResponse.decodeList<Post>()
+                val posts = PostApi.getTimeline(start.toLong(), end.toLong());
 
                 if (posts.isNotEmpty()) {
                     postsAdapter.addAll(posts)
+                } else if(alreadyLoaded == 0) {
+                    binding.statusText.visibility = View.VISIBLE
+                    binding.statusText.text = "No posts available."
                 }
 
                 if (posts.size < pageSize) {
@@ -111,6 +150,8 @@ class HomeFragment : Fragment() {
             } catch (e: Exception) {
                 Log.e("HomeFragment", "Error fetching posts: ${e.message}", e)
                 Toast.makeText(requireContext(), "Error fetching posts: ${e.message}", Toast.LENGTH_LONG).show()
+                binding.statusText.visibility = View.VISIBLE
+                binding.statusText.text = "Error loading posts."
             } finally {
                 isLoading = false
             }
