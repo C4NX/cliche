@@ -3,4 +3,17 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
+    <string name="label_login">Login</string>
+    <string name="user_prefix">User #%1$d</string>
+
+    <!-- Added strings required by item_instagram_post.xml -->
+    <string name="avatar_desc">Avatar</string>
+    <string name="username_placeholder">username</string>
+    <string name="desc_like">Like</string>
+    <string name="desc_comment">Comment</string>
+    <string name="desc_share">Share</string>
+    <string name="desc_bookmark">Bookmark</string>
+    <string name="sample_likes">1,234 likes</string>
 </resources>
