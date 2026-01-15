@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- FULL SCREEN LOADING -->
+    <!-- Loading Screen -->
     <LinearLayout
         android:id="@+id/loadingScreen"
         android:layout_width="match_parent"
@@ -21,8 +21,7 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
-
-    <!-- LOGIN FORM (HIDDEN BY DEFAULT) -->
+    <!-- Login / Register Form -->
     <LinearLayout
         android:id="@+id/loginForm"
         android:layout_width="match_parent"
@@ -33,18 +32,41 @@
         android:visibility="gone"
         tools:visibility="visible">
 
+        <!-- Tabs: Login / Register -->
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@mipmap/ic_launcher" />
+            android:contentDescription="@string/img_logo_content_desc"
+            app:srcCompat="@mipmap/ic_launcher"
+            android:layout_marginBottom="50dp"
+            />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/authTabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:tabMode="fixed"
+            app:tabGravity="fill" />
+
+        <!-- Username is only shown for the Register tab -->
+        <EditText
+            android:id="@+id/usernameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/label_username"
+            android:visibility="gone"
+            android:inputType="textPersonName"
+            android:autofillHints="username" />
 
         <EditText
             android:id="@+id/emailInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints="emailAddress"
-            android:hint="@string/label_email" />
+            android:hint="@string/label_email"
+            android:inputType="textEmailAddress" />
 
         <EditText
             android:id="@+id/passwordInput"
@@ -66,7 +88,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/btn_login_register"
-            app:icon="@drawable/material_symbols__photo_camera_rounded" />
-    </LinearLayout>
+            app:icon="@drawable/material_symbols__photo_camera_rounded"
+            android:visibility="gone" />
 
+        <!-- googleBtn : styled without using MaterialButton -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/googleBtn"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:gravity="center_vertical"
+            android:text="@string/login_google"
+            android:textAllCaps="false"
+            android:textColor="#3C4043"
+            android:drawableStart="@drawable/material_icon_theme__google"
+            android:drawablePadding="12dp"
+            android:background="@drawable/google_btn_background"
+            android:drawableTint="@null" />
+
+    </LinearLayout>
 </FrameLayout>
