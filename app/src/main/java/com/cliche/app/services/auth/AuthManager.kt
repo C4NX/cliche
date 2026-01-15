@@ -32,6 +32,24 @@ object AuthManager {
     }
 
     /**
+     * Performs classic email/password registration.
+     */
+    suspend fun registerWithEmail(email: String, password: String) {
+        Log.d("AuthManager", "Attempting to register with email: $email")
+        val user = supabaseClient.auth.signUpWith(Email) {
+            this.email = email
+            this.password = password
+        }
+
+        if (user != null) {
+            Log.d("AuthManager", "Registration successful for user id: ${user.id}")
+        } else {
+            Log.e("AuthManager", "Registration failed: currentUser is null after signUpWithEmail")
+            throw Exception("Registration failed: unknown error occurred.")
+        }
+    }
+
+    /**
      * Signs out the currently logged-in user.
      */
     suspend fun signOut(context: Context) {

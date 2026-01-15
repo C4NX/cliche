@@ -5,7 +5,7 @@
     <string name="title_notifications">Notifications</string>
     <string name="label_email">Email</string>
     <string name="label_password">Password</string>
-    <string name="label_login">Login</string>
+    <string name="btn_login_login">Login</string>
     <string name="user_prefix">User #%1$d</string>
 
     <!-- Added strings required by item_instagram_post.xml -->
@@ -16,4 +16,6 @@
     <string name="desc_share">Share</string>
     <string name="desc_bookmark">Bookmark</string>
     <string name="sample_likes">1,234 likes</string>
+    <string name="btn_login_register">Create your cliché account !</string>
+    <string name="img_logo_content_desc">logo</string>
 </resources>
