@@ -57,8 +57,8 @@ CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
     SET "search_path" TO ''
     AS $$
 begin
-  insert into public.profiles (id, full_name, avatar_url)
-  values (new.id, new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'avatar_url');
+  insert into public.profiles (id, username)
+  values (new.id, new.raw_user_meta_data->>'username');
   return new;
 end;
 $$;
@@ -98,9 +98,7 @@ CREATE TABLE IF NOT EXISTS "public"."profiles" (
     "id" "uuid" NOT NULL,
     "updated_at" timestamp with time zone,
     "username" "text",
-    "full_name" "text",
     "avatar_url" "text",
-    "website" "text",
     CONSTRAINT "username_length" CHECK (("char_length"("username") >= 3))
 );
 

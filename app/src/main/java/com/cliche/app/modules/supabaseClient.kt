@@ -16,6 +16,8 @@ val supabaseClient by lazy {
         install(Auth) {
             autoSaveToStorage = true
             autoLoadFromStorage = true
+            host = BuildConfig.SUPABASE_URL
+            scheme = "com.cliche.app"
         }
         install(Postgrest)
     }

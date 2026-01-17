@@ -1,5 +1,4 @@
 import java.util.Properties
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val localProperties = Properties().apply {
     val file = rootProject.file("local.properties")
@@ -8,6 +7,8 @@ val localProperties = Properties().apply {
 
 val supabaseUrlProp = localProperties.getProperty("SUPABASE_URL") ?: ""
 val supabaseAnonKeyProp = localProperties.getProperty("SUPABASE_ANON_KEY") ?: ""
+
+val tagName = localProperties.getProperty("TAG_NAME") ?: "@dev"
 
 plugins {
     alias(libs.plugins.android.application)
@@ -30,6 +31,7 @@ android {
 
         buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrlProp\"")
         buildConfigField("String", "SUPABASE_ANON_KEY", "\"$supabaseAnonKeyProp\"")
+        buildConfigField("String", "TAG_NAME", "\"$tagName\"")
     }
 
     buildTypes {

@@ -1,59 +1,131 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- FULL SCREEN LOADING -->
+    <!-- Loading Screen -->
     <LinearLayout
         android:id="@+id/loadingScreen"
-        android:orientation="vertical"
-        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF">
+        android:background="#80000000"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible"
+        tools:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
 
         <ProgressBar
+            android:id="@+id/loadingProgress"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            style="?android:attr/progressBarStyleLarge" />
     </LinearLayout>
 
-
-    <!-- LOGIN FORM (HIDDEN BY DEFAULT) -->
+    <!-- Login / Register Form -->
     <LinearLayout
         android:id="@+id/loginForm"
-        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical"
         android:padding="24dp"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <!-- Tabs: Login / Register -->
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/img_logo_content_desc"
+            app:srcCompat="@mipmap/ic_launcher"
+            android:layout_marginBottom="50dp"
+            />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/authTabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:tabMode="fixed"
+            app:tabGravity="fill" />
+
+        <EditText
+            android:id="@+id/usernameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/activity_login_label_username"
+            android:visibility="gone"
+            android:inputType="textPersonName"
+            android:autofillHints="username" />
 
         <EditText
             android:id="@+id/emailInput"
-            android:autofillHints="emailAddress"
-            android:hint="@string/label_email"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:autofillHints="emailAddress"
+            android:hint="@string/activity_login_label_email"
+            android:inputType="textEmailAddress" />
 
         <EditText
             android:id="@+id/passwordInput"
-            android:autofillHints="password"
-            android:hint="@string/label_password"
-            android:inputType="textPassword"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:autofillHints="password"
+            android:hint="@string/activity_login_label_password"
+            android:inputType="textPassword" />
 
         <Button
             android:id="@+id/loginBtn"
-            android:text="@string/label_login"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="@string/activity_login_login"
+            app:icon="@drawable/baseline_login_24" />
 
         <Button
-            android:id="@+id/skipLoginBtn"
-            android:text="Skip Login"
+            android:id="@+id/registerBtn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:text="@string/activity_login_register"
+            app:icon="@drawable/material_symbols__photo_camera_rounded"
+            android:visibility="gone" />
 
+        <!-- googleBtn : styled without using MaterialButton -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/googleBtn"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:gravity="center_vertical"
+            android:text="@string/activity_login_google_sign_in"
+            android:textAllCaps="false"
+            android:textColor="#3C4043"
+            android:drawableStart="@drawable/material_icon_theme__google"
+            android:drawablePadding="12dp"
+            android:background="@drawable/google_btn_background"
+            android:drawableTint="@null" />
+
+        <ProgressBar
+            android:id="@+id/formProgress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/appVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="TextView"
+            android:textAlignment="textEnd" />
+
+    </LinearLayout>
 </FrameLayout>
