@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +17,7 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 
 class LoginActivity: AppCompatActivity() {
+    val TAG = "LoginActivity"
 
     private val loginBtn: Button by lazy { findViewById(R.id.loginBtn) }
     private val registerBtn: Button by lazy { findViewById(R.id.registerBtn) }
@@ -25,33 +28,43 @@ class LoginActivity: AppCompatActivity() {
     private val loadingScreen: View by lazy { findViewById(R.id.loadingScreen) }
     private val loginForm: View by lazy { findViewById(R.id.loginForm) }
     private val authTabs: TabLayout by lazy { findViewById(R.id.authTabs) }
+    private val formProgress: ProgressBar by lazy { findViewById(R.id.formProgress) }
+    private val versionTextView: TextView by lazy { findViewById(R.id.appVersion) }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_login)
         setupAuthTabs()
+        setupLoginRegisterForm()
+        setupAppVersion()
 
-        // First, wait for auth system to be ready and check if user is already logged in
+        // Wait for authentication manager to be ready
         lifecycleScope.launch {
             AuthManager.waitToBeReady()
 
             val restoredUser = AuthManager.getUserOrNull()
             if(restoredUser != null){
-                Log.d("LoginActivity", "Auth state restored for user id: ${restoredUser.id}")
-                startMainActivity()
+                Log.d(TAG, "Auth state restored for user id: ${restoredUser.id}")
+                closeAndStartMainActivity()
             } else {
-                Log.d("LoginActivity", "No user restored after auth initialization.")
+                Log.d(TAG, "No user restored after auth initialization.")
 
-                // So show login form
+                // So show login form; hide global loading scrim
                 loadingScreen.setVisible(false)
                 loginForm.setVisible(true)
             }
         }
+    }
 
-        // Then, set up register button
+    /**
+     * Sets up the login and registration form.
+     */
+    private fun setupLoginRegisterForm() {
+        // First, set up register button
         registerBtn.setOnClickListener {
-            setFormLoadingState(true)
+            updateLoadingState(true)
 
             lifecycleScope.launch {
                 try {
@@ -60,18 +73,22 @@ class LoginActivity: AppCompatActivity() {
                     val username = usernameInput.text.toString()
 
                     AuthManager.register(email, password, username)
-                    startMainActivity()
+                    closeAndStartMainActivity()
                 } catch (e: Exception) {
-                    Toast.makeText(this@LoginActivity, "Registration failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@LoginActivity,
+                        getString(R.string.toast_register_failed, e.message),
+                        Toast.LENGTH_LONG
+                    ).show()
                 } finally {
-                    setFormLoadingState(false)
+                    updateLoadingState(false)
                 }
             }
         }
 
         // Then, set up login button
         loginBtn.setOnClickListener {
-            setFormLoadingState(true)
+            updateLoadingState(true)
 
             lifecycleScope.launch {
                 try {
@@ -79,25 +96,34 @@ class LoginActivity: AppCompatActivity() {
                     val password = passwordInput.text.toString()
 
                     AuthManager.login(email, password)
-                    startMainActivity()
+                    closeAndStartMainActivity()
                 } catch (e: Exception) {
-                    Toast.makeText(this@LoginActivity, "Login failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@LoginActivity,
+                        getString(R.string.toast_login_failed, e.message),
+                        Toast.LENGTH_LONG
+                    ).show()
                 } finally {
-                    setFormLoadingState(false)
+                    updateLoadingState(false)
                 }
             }
         }
 
         // Finally, set up Google login button
         googleBtn.setOnClickListener {
-            setFormLoadingState(true)
+            updateLoadingState(true)
 
             lifecycleScope.launch {
                 try {
                     AuthManager.loginWithGoogle(this@LoginActivity)
                 } catch (e: Exception) {
-                    Toast.makeText(this@LoginActivity, "Google login failed: ${e.message}", Toast.LENGTH_LONG).show()
-                    setFormLoadingState(false)
+                    Toast.makeText(
+                        this@LoginActivity,
+                        getString(R.string.toast_google_login_failed, e.message),
+                        Toast.LENGTH_LONG
+                    ).show()
+                } finally {
+                    updateLoadingState(false)
                 }
             }
         }
@@ -105,11 +131,10 @@ class LoginActivity: AppCompatActivity() {
 
     /**
      * Sets up the authentication tabs for Login and Register.
-     * Configures the visibility of input fields and buttons based on the selected tab.
      */
     private fun setupAuthTabs() {
-        authTabs.addTab(authTabs.newTab().setText("Login"))
-        authTabs.addTab(authTabs.newTab().setText("Register"))
+        authTabs.addTab(authTabs.newTab().setText(getString(R.string.activity_login_tab_login)))
+        authTabs.addTab(authTabs.newTab().setText(getString(R.string.activity_login_tab_register)))
 
         authTabs.getTabAt(0)?.select()
 
@@ -132,28 +157,40 @@ class LoginActivity: AppCompatActivity() {
     }
 
     /**
-     * Sets the loading state of the login form.
-     * When loading, shows the loading screen and hides the login form.
-     * When not loading, shows the login form and hides the loading screen.
-     *
-     * @param isLoading Boolean indicating whether the form is in loading state.
-     *
-     * @return Unit
+     * Displays the application version based on the Git tag name.
      */
-    private fun setFormLoadingState(isLoading: Boolean) {
+    private fun setupAppVersion() {
+        val gitTagName = BuildConfig.TAG_NAME
+        versionTextView.setText(gitTagName)
+    }
+
+    /**
+     * Sets the loading state of the login form.
+     */
+    private fun updateLoadingState(isLoading: Boolean) {
         if (isLoading) {
-            loadingScreen.setVisible(true)
-            loginForm.setVisible(false)
+            formProgress.visibility = View.VISIBLE
+            emailInput.isEnabled = false
+            passwordInput.isEnabled = false
+            usernameInput.isEnabled = false
+            loginBtn.isEnabled = false
+            registerBtn.isEnabled = false
+            googleBtn.isEnabled = false
         } else {
-            loadingScreen.setVisible(false)
-            loginForm.setVisible(true)
+            formProgress.visibility = View.GONE
+            emailInput.isEnabled = true
+            passwordInput.isEnabled = true
+            usernameInput.isEnabled = true
+            loginBtn.isEnabled = true
+            registerBtn.isEnabled = true
+            googleBtn.isEnabled = true
         }
     }
 
     /**
      * Starts the MainActivity and finishes the current LoginActivity.
      */
-    private fun startMainActivity() {
+    private fun closeAndStartMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish() // prevents returning to login screen with back button

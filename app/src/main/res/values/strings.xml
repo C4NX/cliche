@@ -3,12 +3,10 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="label_email">Email</string>
-    <string name="label_password">Password</string>
-    <string name="btn_login_login">Login</string>
+    <string name="activity_login_label_email">Email</string>
+    <string name="activity_login_label_password">Password</string>
+    <string name="activity_login_login">Login</string>
     <string name="user_prefix">User #%1$d</string>
-
-    <!-- Added strings required by item_instagram_post.xml -->
     <string name="avatar_desc">Avatar</string>
     <string name="username_placeholder">username</string>
     <string name="desc_like">Like</string>
@@ -16,9 +14,16 @@
     <string name="desc_share">Share</string>
     <string name="desc_bookmark">Bookmark</string>
     <string name="sample_likes">1,234 likes</string>
-    <string name="btn_login_register">Create your cliché account !</string>
+    <string name="activity_login_register">Register</string>
     <string name="img_logo_content_desc">logo</string>
-    <string name="label_username">Username</string>
-    <string name="btn_google_login">Sign-in with Google</string>
-    <string name="login_google">Login with Google</string>
+    <string name="activity_login_label_username">Username</string>
+
+
+    <string name="activity_login_google_sign_in">Sign-in with Google</string>
+    <string name="activity_login_tab_login">Login</string>
+    <string name="activity_login_tab_register">Register</string>
+
+    <string name="toast_register_failed">Registration failed: %1$s</string>
+    <string name="toast_login_failed">Login failed: %1$s</string>
+    <string name="toast_google_login_failed">Google login failed: %1$s</string>
 </resources>
