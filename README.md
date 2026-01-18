@@ -1,4 +1,7 @@
-# Cliché - An instagram-like app
+<div align="center">
+  <img src="./app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="Cliché">
+  <h1>Cliché - An instagram-like app</h1>
+</div>
 
 ## Getting Started
 
