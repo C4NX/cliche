@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.cliche.app.R
-import com.cliche.app.models.Post
 import com.cliche.app.models.TimelinePost
 
 /**
@@ -52,7 +51,7 @@ class PostsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_instagram_post, parent, false)
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_post, parent, false)
         return ViewHolder(v)
     }
 

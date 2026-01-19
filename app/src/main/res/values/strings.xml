@@ -26,4 +26,19 @@
     <string name="toast_register_failed">Registration failed: %1$s</string>
     <string name="toast_login_failed">Login failed: %1$s</string>
     <string name="toast_google_login_failed">Google login failed: %1$s</string>
+
+    <!-- AddPost screen strings -->
+    <string name="add_post_title">New Post</string>
+    <string name="add_post_pick_image">Tap to add a photo</string>
+    <string name="add_post_hint_caption">Write a caption…</string>
+    <string name="add_post_add_location">Add location</string>
+    <string name="add_post_tag_people">Tag people</string>
+    <string name="add_post_share">Share</string>
+    <string name="add_post_back">Back</string>
+    <string name="add_post_pick_cta">Tap to add a photo</string>
+    <string name="add_post_no_content_error">Please add a caption or an image</string>
+
+    <!-- Home state strings -->
+    <string name="no_posts_available">No posts available.</string>
+    <string name="error_loading_posts">Error loading posts.</string>
 </resources>
