@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item        android:id="@+id/settings"
-        android:title="@string/title_settings"
-        android:icon="@drawable/ic_settings"
-        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/profile"
+        android:title="@string/title_profile"
+        android:icon="@drawable/ic_avatar_placeholder" />
+
+    <item
+        android:id="@+id/settings"
+        android:title="@string/title_settings" />
 
 </menu>
