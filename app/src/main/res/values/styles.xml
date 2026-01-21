@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Style pour la toolbar supérieure -->
+    <style name="Widget.App.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="titleCentered">true</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+</resources>

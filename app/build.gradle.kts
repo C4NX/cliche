@@ -81,4 +81,6 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
 
     implementation(libs.coil)
+
+    implementation(libs.androidx.preference.ktx)
 }

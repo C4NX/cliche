@@ -1,5 +1,6 @@
 package com.cliche.app
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -11,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.cliche.app.databinding.ActivityMainBinding
+import com.cliche.app.settings.SettingsActivity
 import com.google.android.material.appbar.MaterialToolbar
 
 class MainActivity : AppCompatActivity() {
@@ -58,7 +60,9 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.settings -> {
-                Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)
