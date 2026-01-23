@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class Post (
     val id: Int,
     var created_at: String,
-    var description: String,
+    var caption: String?,
     var owner: Profile? = null,
-    var content: List<String>? = null
+    var media_paths: List<String>? = null
 )

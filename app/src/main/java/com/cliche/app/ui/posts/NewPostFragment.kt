@@ -16,7 +16,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.load
+import com.cliche.app.R
 import com.cliche.app.databinding.FragmentBottomNewPostMenuBinding
+import com.cliche.app.services.api.PostApi
 import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
@@ -24,6 +26,7 @@ import java.util.Date
 import java.util.Locale
 
 class NewPostFragment : Fragment() {
+    val TAG = "NewPostFragment"
 
     private var _binding: FragmentBottomNewPostMenuBinding? = null
     private val binding get() = _binding!!
@@ -57,6 +60,19 @@ class NewPostFragment : Fragment() {
         }
     }
 
+    // Gallery launcher
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            selectedImageUri = uri
+            photoFile = null
+            showImagePreview(uri)
+        } else {
+            Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,10 +85,34 @@ class NewPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.addPostPickImage.setOnClickListener { openCameraWithPermissionCheck() }
+        binding.addPostPickImage.setOnClickListener { showImageSourceDialog() }
+        binding.addPostPickContainer.setOnClickListener { showImageSourceDialog() }
         binding.addPostBack.setOnClickListener { findNavController().navigateUp() }
         binding.addPostSend.setOnClickListener { submitPost() }
-        binding.addPostPickContainer.setOnClickListener { openCameraWithPermissionCheck() }
+        binding.addPostImagePreview.setOnClickListener {
+            showImageSourceDialog()
+        }
+    }
+
+    private fun showImageSourceDialog() {
+        val options = arrayOf(
+            getString(R.string.add_post_select_from_gallery),
+            getString(R.string.add_post_select_capture),
+        )
+        val builder = android.app.AlertDialog.Builder(requireContext())
+        builder.setTitle(getString(R.string.add_post_select_title))
+        builder.setItems(options) { _, which ->
+            when (which) {
+                0 -> openCameraWithPermissionCheck()
+                1 -> pickImageFromGallery()
+            }
+        }
+        builder.setNegativeButton(getString(R.string.cancel), null)
+        builder.show()
+    }
+
+    private fun pickImageFromGallery() {
+        pickImageLauncher.launch("image/*")
     }
 
     private fun openCameraWithPermissionCheck() {
@@ -85,7 +125,6 @@ class NewPostFragment : Fragment() {
             }
 
             shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
-                // Optional: Show explanation dialog before requesting
                 Toast.makeText(
                     requireContext(),
                     "Camera access is needed to take photos for your post.",
@@ -95,7 +134,6 @@ class NewPostFragment : Fragment() {
             }
 
             else -> {
-                // Request permission directly
                 requestPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
@@ -111,7 +149,7 @@ class NewPostFragment : Fragment() {
             )
             takePictureLauncher.launch(selectedImageUri)
         } catch (e: Exception) {
-            Log.e("NewPostFragment", "Error creating image file", e)
+            Log.e(TAG, "Error creating image file", e)
             Toast.makeText(requireContext(), "Unable to open camera", Toast.LENGTH_SHORT).show()
         }
     }
@@ -143,7 +181,7 @@ class NewPostFragment : Fragment() {
             binding.addPostPickContainer.visibility = View.GONE
 
         } catch (e: Exception) {
-            Log.e("NewPostFragment", "Error loading image preview", e)
+            Log.e(TAG, "Error loading image preview", e)
             Toast.makeText(requireContext(), "Unable to load image", Toast.LENGTH_SHORT).show()
         }
     }
@@ -154,7 +192,7 @@ class NewPostFragment : Fragment() {
         if (caption.isEmpty() && selectedImageUri == null) {
             Toast.makeText(
                 requireContext(),
-                getString(com.cliche.app.R.string.add_post_no_content_error),
+                getString(R.string.add_post_no_content_error),
                 Toast.LENGTH_SHORT
             ).show()
             return
@@ -162,11 +200,27 @@ class NewPostFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                // TODO: Upload image from photoFile and caption
-                Toast.makeText(requireContext(), "Post shared", Toast.LENGTH_SHORT).show()
+                val filePaths = if (selectedImageUri != null) {
+                    if (photoFile != null) {
+                        listOf(photoFile!!.absolutePath)
+                    } else {
+                        val tempFile = copyUriToFile(selectedImageUri!!)
+                        listOf(tempFile.absolutePath)
+                    }
+                } else {
+                    emptyList()
+                }
+
+                PostApi.createPost(caption, filePaths)
+
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.toast_newpost_success),
+                    Toast.LENGTH_SHORT
+                ).show()
                 findNavController().navigateUp()
             } catch (e: Exception) {
-                Log.e("NewPostFragment", "Error sharing post", e)
+                Log.e(TAG, "Error sharing post", e)
                 Toast.makeText(
                     requireContext(),
                     "Error sharing post: ${e.message}",
@@ -174,6 +228,24 @@ class NewPostFragment : Fragment() {
                 ).show()
             }
         }
+    }
+
+    @Throws(Exception::class)
+    private fun copyUriToFile(uri: Uri): File {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+            ?: throw IllegalArgumentException("Unable to open input stream for URI: $uri")
+
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+        val storageDir = requireContext().getExternalFilesDir(null)
+        val tempFile = File.createTempFile("GALLERY_${timeStamp}_", ".jpg", storageDir)
+
+        inputStream.use { input ->
+            tempFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        return tempFile
     }
 
     override fun onDestroyView() {

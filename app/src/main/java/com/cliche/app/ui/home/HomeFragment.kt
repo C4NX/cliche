@@ -78,13 +78,13 @@ class HomeFragment : Fragment() {
                 Log.d("HomeFragment", "onLike: ${post.id}")
 
                 lifecycleScope.launch {
-                    if(post.user_has_liked) {
+                    if(post.liked_by_user) {
                         PostApi.removeLike(post.id)
-                        post.user_has_liked = false
+                        post.liked_by_user = false
                         post.likes_count -= 1
                     } else {
                         PostApi.addLike(post.id)
-                        post.user_has_liked = true
+                        post.liked_by_user = true
                         post.likes_count += 1
                     }
                 }
@@ -149,13 +149,13 @@ class HomeFragment : Fragment() {
 
                 Log.d("HomeFragment", "Fetching posts from $start to $end")
 
-                val posts = PostApi.getTimeline(start.toLong(), end.toLong())
+                val posts = PostApi.fetchTimeline(start.toLong(), end.toLong())
 
                 if (posts.isNotEmpty()) {
                     postsAdapter.addAll(posts)
                 } else if(alreadyLoaded == 0) {
                     binding.statusText.visibility = View.VISIBLE
-                    binding.statusText.text = getString(R.string.no_posts_available)
+                    binding.statusText.text = getString(R.string.activity_main_posts_no_available)
                 }
 
                 if (posts.size < pageSize) {
@@ -166,7 +166,7 @@ class HomeFragment : Fragment() {
                 Log.e("HomeFragment", "Error fetching posts: ${e.message}", e)
                 Toast.makeText(requireContext(), "Error fetching posts: ${e.message}", Toast.LENGTH_LONG).show()
                 binding.statusText.visibility = View.VISIBLE
-                binding.statusText.text = getString(R.string.error_loading_posts)
+                binding.statusText.text = getString(R.string.activity_main_posts_err_loading)
             } finally {
                 isLoading = false
             }

@@ -10,9 +10,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import coil.load
 import com.cliche.app.R
 import com.cliche.app.models.TimelinePost
+import com.cliche.app.services.api.PostApi
+import com.cliche.app.services.api.ProfileApi
 
 /**
  * Adapter pour l'affichage des posts dans un RecyclerView.
@@ -41,7 +44,7 @@ class PostsAdapter(
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivAvatar: ImageView = itemView.findViewById(R.id.ivAvatar)
         val tvUsername: TextView = itemView.findViewById(R.id.tvUsername)
-        val ivPostImage: ImageView = itemView.findViewById(R.id.ivPostImage)
+        val vpPostImages: ViewPager2 = itemView.findViewById(R.id.vpPostImages)
         val tvLikes: TextView = itemView.findViewById(R.id.tvLikes)
         val tvCaption: TextView = itemView.findViewById(R.id.tvCaption)
         val ivLike: ImageView = itemView.findViewById(R.id.iv_like)
@@ -59,36 +62,30 @@ class PostsAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val post = items[position]
 
-        holder.tvUsername.text = post.username
-        val avatarUrl = post.avatar_url
-        if (!avatarUrl.isNullOrEmpty()) {
-            holder.ivAvatar.load(avatarUrl) {
-                crossfade(true)
-                placeholder(R.drawable.ic_avatar_placeholder)
-                error(R.drawable.ic_avatar_placeholder)
-            }
-        } else {
-            holder.ivAvatar.setImageResource(R.drawable.ic_avatar_placeholder)
+        holder.tvUsername.text = post.owner_username
+        val avatarUrl = ProfileApi.getPublicAvatarUrl(post.owner_avatar_url)
+        holder.ivAvatar.load(avatarUrl) {
+            crossfade(true)
+            placeholder(R.drawable.ic_avatar_placeholder)
+            error(R.drawable.ic_avatar_placeholder)
         }
 
-        val firstImageUrl = post.content.firstOrNull()
-        if (!firstImageUrl.isNullOrEmpty()) {
-            holder.ivPostImage.load(firstImageUrl) {
-                crossfade(true)
-                placeholder(R.drawable.ic_avatar_placeholder)
-                error(R.drawable.ic_avatar_placeholder)
-            }
+        // Get all public image URLs & setup ViewPager
+        val publicPostUrls = PostApi.getPostPublicUrls(post) ?: emptyList()
+
+        if (publicPostUrls.isEmpty()) {
+            holder.vpPostImages.visibility = View.GONE
         } else {
-            holder.ivPostImage.setImageResource(R.drawable.ic_avatar_placeholder)
+            holder.vpPostImages.visibility = View.VISIBLE
+            val adapter = ImagePostAdapter(publicPostUrls)
+            holder.vpPostImages.adapter = adapter
         }
 
-
-        // tvLikes actuellement affiche created_at dans le code initial, on conserve si pas de champ likes
-        holder.tvLikes.text = post.likes_count.toString() + " likes"
-        holder.tvCaption.text = post.description
+        holder.tvLikes.text = "${post.likes_count} likes"
+        holder.tvCaption.text = post.caption
 
         // Gestion état de like
-        val isLiked = post.user_has_liked
+        val isLiked = post.liked_by_user
         if(isLiked) {
             likedIds.add(post.id)
         }
@@ -104,7 +101,7 @@ class PostsAdapter(
                 listener?.onLike(post)
             } catch (e: Exception) {
                 Log.e("PostsAdapter", "Error in onLike callback: ${e.message}")
-                doLikeClickOnHolder(holder, post) // Revert UI change
+                doLikeClickOnHolder(holder, post)
                 Toast.makeText(v.context, "Error in onLike callback: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
@@ -127,7 +124,7 @@ class PostsAdapter(
     }
 
     /**
-     * Gère le clic sur le bouton like d'un post (animation + changement UI).
+     * Gère le clic sur le bouton "like" d'un post.
      */
     @SuppressLint("SetTextI18n")
     private fun doLikeClickOnHolder(holder: ViewHolder, post: TimelinePost) {
@@ -144,7 +141,7 @@ class PostsAdapter(
             holder.ivLike.animate().scaleX(1f).scaleY(1f).setDuration(120).start()
         }.start()
 
-        // Update UI
+        // Met à jour l'UI (couleur et nombre de likes)
         holder.ivLike.setColorFilter(if (nowLiked) Color.RED else Color.DKGRAY)
         holder.tvLikes.text = if (nowLiked) {
             post.likes_count + 1

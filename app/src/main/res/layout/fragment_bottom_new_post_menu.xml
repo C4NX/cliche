@@ -53,7 +53,9 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
                 android:contentDescription="@string/add_post_pick_cta"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:clickable="true"
+                android:focusable="true" />
 
             <LinearLayout
                 android:id="@+id/add_post_pick_container"
