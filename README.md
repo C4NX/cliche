@@ -12,12 +12,13 @@ SUPABASE_URL=<your-supabase-url>
 SUPABASE_ANON_KEY=<your-supabase-anon-key>
 ```
 
-You will also need supabase cli installed. You can find the installation instructions [here](https://supabase.com/docs/guides/local-development/cli/getting-started).
+You will also need supabase-cli installed. You can find the installation instructions [here](https://supabase.com/docs/guides/local-development/cli/getting-started).
 
 ```bash
 supabase login
 supabase link --project-ref <your-project-ref>
 supabase start
+supabase functions start
 ```
 
 And set `SUPABASE_URL` and `SUPABASE_ANON_KEY` with the values from the local supabase instance.
