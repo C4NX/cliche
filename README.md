@@ -51,6 +51,6 @@ Started supabase local development setup.
 set the `local.properties` like this:
 
 ```properties
-SUPABASE_URL=http://localhost:54321 (the Project URL from above)
+SUPABASE_URL=http://10.0.2.2:54321 (the Project URL from above, or 10.0.2.2 for android emulator)
 SUPABASE_ANON_KEY=<your-local-supabase-anon-key> (the Publishable API Key in Authentication Keys section of supabase cli output)
 ```
