@@ -30,6 +30,20 @@ object PostApi {
     const val TAG = "PostApi"
 
     /**
+     * Fetch a single post by its id from the timeline view.
+     */
+    suspend fun fetchPostById(id: Long): TimelinePost? {
+        Log.d(TAG, "Fetching post by id $id")
+        val results = supabaseClient.postgrest.from("timeline")
+            .select {
+                filter { eq("id", id) }
+                limit(1)
+            }
+            .decodeList<TimelinePost>()
+        return results.firstOrNull()
+    }
+
+    /**
      * Fetches a list of posts within the specified range.
      *
      * @param start The starting index for pagination.

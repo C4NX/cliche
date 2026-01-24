@@ -55,8 +55,11 @@ class TimelinePostActionListener(
     }
 
     override fun onItemClick(post: TimelinePost) {
-        Toast.makeText(fragment.requireContext(), "Open post ${post.id}", Toast.LENGTH_SHORT).show()
         Log.d(TAG, "onItemClick: ${post.id}")
+        fragment.findNavController().navigate(
+            R.id.navigation_post,
+            Bundle().apply { putLong(com.cliche.app.ui.posts.PostFragment.ARG_POST_ID, post.id) }
+        )
     }
 
     override fun onProfileClick(userId: String) {

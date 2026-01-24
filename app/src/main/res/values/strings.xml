@@ -58,9 +58,11 @@
 
     <string name="activity_main_posts_no_available">No posts available.</string>
     <string name="activity_main_posts_err_loading">Error loading posts.</string>
+    <string name="activity_main_posts_loading">Loading posts...</string>
 
     <string name="cancel">Cancel</string>
     <string name="error_not_authorized">You are not authorized to perform this action.</string>
+    <string name="error_generic">An error occurred: %1$s</string>
 
     <!-- Profile screen strings -->
     <string name="profile_change_avatar">Change avatar</string>
