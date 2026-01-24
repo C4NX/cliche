@@ -6,13 +6,15 @@ alter table "public"."posts" drop column "description";
 
 alter table "public"."posts" add column "caption" text;
 
-alter table "public"."posts" add column "media_paths" text[] not null;
+alter table "public"."posts" add column "media_paths" text[] not null default '{}';
 
 alter table "public"."posts" alter column "owner_id" set not null;
 
 set check_function_bodies = off;
 
-create or replace view "public"."timeline" as  SELECT p.id,
+create or replace view "public"."timeline"
+    with (security_invoker=on) as
+    SELECT p.id,
     p.created_at,
     p.caption,
     p.owner_id,
