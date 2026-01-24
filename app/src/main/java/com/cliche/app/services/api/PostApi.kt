@@ -6,6 +6,7 @@ import com.cliche.app.models.Post
 import com.cliche.app.models.TimelinePost
 import com.cliche.app.modules.supabaseClient
 import com.cliche.app.services.auth.AuthManager
+import com.cliche.app.utils.LatLng
 import com.cliche.app.utils.requireUserId
 import io.github.jan.supabase.exceptions.UnauthorizedRestException
 import io.github.jan.supabase.functions.functions
@@ -83,7 +84,7 @@ object PostApi {
     /**
      * Creates a new post with the given caption and media files.
      */
-    suspend fun createPost(caption: String, filePaths: List<String>) {
+    suspend fun createPost(caption: String, filePaths: List<String>, location: LatLng? = null) {
         val userId = requireUserId()
         Log.d(TAG, "Creating post by user $userId")
 
@@ -92,6 +93,10 @@ object PostApi {
                 MultiPartFormDataContent(
                     formData {
                         append("caption", caption)
+                        if (location != null) {
+                            append("latitude", location.latitude.toString())
+                            append("longitude", location.longitude.toString())
+                        }
 
                         filePaths.forEach { path ->
                             // Validate file existence

@@ -29,6 +29,8 @@
     <string name="activity_main_post_desc_like">Like</string>
     <string name="activity_main_post_desc_comment">Comment</string>
     <string name="activity_main_post_desc_share">Share</string>
+    <string name="activity_main_post_desc_location">Open location</string>
+    <string name="activity_main_post_view_location">View location</string>
     <string name="activity_main_post_desc_bookmark">Bookmark</string>
     <string name="activity_main_post_likes">1,234 likes</string>
     <string name="activity_login_register">Register</string>
@@ -46,6 +48,7 @@
     <string name="add_post_pick_image">Tap to add a photo</string>
     <string name="add_post_hint_caption">Write a caption…</string>
     <string name="add_post_add_location">Add location</string>
+    <string name="add_post_location_added">Location added</string>
     <string name="add_post_tag_people">Tag people</string>
     <string name="add_post_share">Share</string>
     <string name="add_post_back">Back</string>

@@ -32,6 +32,8 @@ const CreatePostSchema = z.object({
     )
     .min(1, "At least one media file is required")
     .max(MAX_MEDIA_FILES, `Maximum ${MAX_MEDIA_FILES} media files allowed`),
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
 });
 
 serve(async (req: Request) => {
@@ -40,11 +42,16 @@ serve(async (req: Request) => {
   const rawMedia = formData.getAll("media").filter((f): f is File =>
     f instanceof File
   );
+  const rawLatitude = formData.get("latitude")?.toString();
+  const rawLongitude = formData.get("longitude")?.toString();
 
-  const { caption, media } = await CreatePostSchema.parseAsync({
-    caption: rawCaption,
-    media: rawMedia,
-  });
+  const { caption, media, latitude, longitude } = await CreatePostSchema
+    .parseAsync({
+      caption: rawCaption,
+      media: rawMedia,
+      latitude: rawLatitude ? Number(rawLatitude) : undefined,
+      longitude: rawLongitude ? Number(rawLongitude) : undefined,
+    });
 
   const user = await validateUser(req);
 
@@ -65,6 +72,8 @@ serve(async (req: Request) => {
         caption: caption ?? null,
         owner_id: user.id,
         media_paths: uploadedPaths,
+        latitude: latitude ?? null,
+        longitude: longitude ?? null,
       });
 
     if (dbError) {

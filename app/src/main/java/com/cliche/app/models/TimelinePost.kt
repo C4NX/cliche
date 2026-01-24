@@ -14,4 +14,7 @@ data class TimelinePost(
     var likes_count: Long,
     val comments_count: Long,
     var liked_by_user: Boolean,
+
+    val latitude: Double? = null,
+    val longitude: Double? = null
 );

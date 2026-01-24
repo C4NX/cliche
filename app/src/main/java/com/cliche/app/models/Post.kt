@@ -8,5 +8,8 @@ data class Post (
     var created_at: String,
     var caption: String?,
     var owner: Profile? = null,
-    var media_paths: List<String>? = null
+    var media_paths: List<String>? = null,
+
+    var latitude: Double? = null,
+    var longitude: Double? = null,
 )

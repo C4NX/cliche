@@ -17,6 +17,9 @@ import com.cliche.app.databinding.FragmentBottomNewPostMenuBinding
 import com.cliche.app.services.api.PostApi
 import com.cliche.app.utils.copyUriToGalleryTempFile
 import com.cliche.app.utils.CameraUtils
+import com.cliche.app.utils.LocationUtils
+import com.cliche.app.utils.LocationUtils.getCurrentLocation
+import com.cliche.app.utils.LatLng
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -28,6 +31,7 @@ class NewPostFragment : Fragment() {
 
     private var selectedImageUri: Uri? = null
     private var photoFile: File? = null
+    private var selectedLocation: LatLng? = null
 
     // Permission launcher
     private val requestPermissionLauncher = registerForActivityResult(
@@ -85,6 +89,35 @@ class NewPostFragment : Fragment() {
         binding.addPostSend.setOnClickListener { submitPost() }
         binding.addPostImagePreview.setOnClickListener {
             showImageSourceDialog()
+        }
+        binding.addPostLocation.setOnClickListener {
+            lifecycleScope.launch {
+                try {
+                    val location = LocationUtils.requestLocationOnLifecycle(requireContext(), requireActivity())
+                    if (location != null) {
+                        selectedLocation = location
+                        binding.addPostLocation.text = getString(R.string.add_post_location_added)
+                        Toast.makeText(
+                            requireContext(),
+                            "Location: ${location.latitude}, ${location.longitude}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Unable to retrieve location",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error getting location", e)
+                    Toast.makeText(
+                        requireContext(),
+                        "Error getting location: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
     }
 
@@ -166,7 +199,7 @@ class NewPostFragment : Fragment() {
                     emptyList()
                 }
 
-                PostApi.createPost(caption, filePaths)
+                PostApi.createPost(caption, filePaths, selectedLocation)
 
                 Toast.makeText(
                     requireContext(),
