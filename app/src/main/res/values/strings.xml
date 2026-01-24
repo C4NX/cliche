@@ -8,6 +8,10 @@
     <string name="activity_login_login">Login</string>
     <string name="activity_main_post_user_prefix">User #%1$d</string>
     <string name="activity_main_post_avatar_desc">Avatar</string>
+    <string name="title_settings">Settings</string>
+
+    <!-- Added strings required by item_instagram_post.xml -->
+    <string name="avatar_desc">Avatar</string>
     <string name="username_placeholder">username</string>
     <string name="activity_main_post_desc_like">Like</string>
     <string name="activity_main_post_desc_comment">Comment</string>
