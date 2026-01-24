@@ -54,9 +54,20 @@
     <string name="add_post_select_from_gallery">Select Image from Gallery</string>
     <string name="add_post_select_title">Select Image</string>
     <string name="add_post_select_capture">Take Photo</string>
+    <string name="camera_permission_rationale">Camera access is needed.</string>
 
     <string name="activity_main_posts_no_available">No posts available.</string>
     <string name="activity_main_posts_err_loading">Error loading posts.</string>
 
     <string name="cancel">Cancel</string>
+    <string name="error_not_authorized">You are not authorized to perform this action.</string>
+
+    <!-- Profile screen strings -->
+    <string name="profile_change_avatar">Change avatar</string>
+    <string name="profile_username_hint">Full name</string>
+    <string name="profile_bio_hint">Bio</string>
+    <string name="profile_save">Save profile</string>
+    <string name="profile_my_posts">My posts</string>
+    <string name="profile_user_posts">Posts by %1$s</string>
+    <string name="profile_desc_edit_profile">Edit profile</string>
 </resources>

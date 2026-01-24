@@ -10,8 +10,6 @@ import {
   validateUser,
 } from "../_shared/utils.ts";
 
-const MB = 1024 * 1024;
-const MAX_FILE_SIZE = 5 * MB;
 const MAX_MEDIA_FILES = 10;
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png"];
 const BUCKET_NAME = "posts";
@@ -25,9 +23,6 @@ const CreatePostSchema = z.object({
           return file.size > 0;
         }, {
           message: "File is empty",
-        })
-        .refine((file) => file.size <= MAX_FILE_SIZE, {
-          message: `File size must not exceed ${MAX_FILE_SIZE / MB} MB`,
         })
         .refine((file) => ALLOWED_MIME_TYPES.includes(file.type), {
           message: `Invalid file type. Allowed: ${

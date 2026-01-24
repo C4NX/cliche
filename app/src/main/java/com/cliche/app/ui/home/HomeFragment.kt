@@ -15,17 +15,15 @@ import com.cliche.app.R
 import com.cliche.app.databinding.FragmentHomeBinding
 import com.cliche.app.models.TimelinePost
 import com.cliche.app.services.api.PostApi
+import com.cliche.app.ui.profile.ProfileFragment
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
+    val TAG = "HomeFragment"
+
     private var _binding: FragmentHomeBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
-
-    // Pagination / adapter state
     private lateinit var postsAdapter: PostsAdapter
     private var isLoading = false
     private var isLastPage = false
@@ -43,11 +41,9 @@ class HomeFragment : Fragment() {
         fetchPosts()
 
         binding.fabAddPost.setOnClickListener {
-
-            Log.d("HomeFragment", "Navigating to AddPostFragment")
-
-            // naviguer vers la destination ajoutée dans le nav graph
-            findNavController().navigate(R.id.navigation_add_post)
+            Log.d(TAG, "Navigating to AddPostFragment")
+            findNavController()
+                .navigate(R.id.navigation_add_post)
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
@@ -59,57 +55,30 @@ class HomeFragment : Fragment() {
         return root
     }
 
+    /**
+     * Clear all items from the adapter and reset pagination state.
+     */
     private fun clearItems() {
         postsAdapter.clear()
         isLastPage = false
     }
 
+    /**
+     * Called when the fragment is no longer interacting with the user.
+     */
     override fun onPause() {
         super.onPause()
-
-        // Effacer les données avant de recharger les données (quand lose focus)
         clearItems()
     }
 
+    /**
+     * Setup the RecyclerView with adapter and scroll listener for pagination.
+     */
     private fun setupRecyclerView() {
-        postsAdapter = PostsAdapter(mutableListOf(), object : PostsAdapter.OnPostActionListener {
-            override fun onLike(post: TimelinePost) {
-                Toast.makeText(requireContext(), "Liked post ${post.id}", Toast.LENGTH_SHORT).show()
-                Log.d("HomeFragment", "onLike: ${post.id}")
-
-                lifecycleScope.launch {
-                    if(post.liked_by_user) {
-                        PostApi.removeLike(post.id)
-                        post.liked_by_user = false
-                        post.likes_count -= 1
-                    } else {
-                        PostApi.addLike(post.id)
-                        post.liked_by_user = true
-                        post.likes_count += 1
-                    }
-                }
-            }
-
-            override fun onComment(post: TimelinePost) {
-                Toast.makeText(requireContext(), "Comment on post ${post.id}", Toast.LENGTH_SHORT).show()
-                Log.d("HomeFragment", "onComment: ${post.id}")
-            }
-
-            override fun onShare(post: TimelinePost) {
-                Toast.makeText(requireContext(), "Share post ${post.id}", Toast.LENGTH_SHORT).show()
-                Log.d("HomeFragment", "onShare: ${post.id}")
-            }
-
-            override fun onBookmark(post: TimelinePost) {
-                Toast.makeText(requireContext(), "Bookmarked post ${post.id}", Toast.LENGTH_SHORT).show()
-                Log.d("HomeFragment", "onBookmark: ${post.id}")
-            }
-
-            override fun onItemClick(post: TimelinePost) {
-                Toast.makeText(requireContext(), "Open post ${post.id}", Toast.LENGTH_SHORT).show()
-                Log.d("HomeFragment", "onItemClick: ${post.id}")
-            }
-        })
+        postsAdapter = PostsAdapter(
+            mutableListOf(),
+            TimelinePostActionListener(this)
+        )
 
         val recycler = binding.recyclerView
         val layoutManager = LinearLayoutManager(requireContext())
@@ -130,11 +99,17 @@ class HomeFragment : Fragment() {
         })
     }
 
+    /**
+     * Called when the view hierarchy associated with the fragment is being removed.
+     */
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
+    /**
+     * Fetch posts from the API with pagination.
+     */
     private fun fetchPosts() {
         if (isLoading || isLastPage) return
         isLoading = true
@@ -147,13 +122,13 @@ class HomeFragment : Fragment() {
                 val start = alreadyLoaded
                 val end = alreadyLoaded + pageSize - 1
 
-                Log.d("HomeFragment", "Fetching posts from $start to $end")
+                Log.d(TAG, "Fetching posts from $start to $end")
 
                 val posts = PostApi.fetchTimeline(start.toLong(), end.toLong())
 
                 if (posts.isNotEmpty()) {
                     postsAdapter.addAll(posts)
-                } else if(alreadyLoaded == 0) {
+                } else if (alreadyLoaded == 0) {
                     binding.statusText.visibility = View.VISIBLE
                     binding.statusText.text = getString(R.string.activity_main_posts_no_available)
                 }
@@ -163,8 +138,12 @@ class HomeFragment : Fragment() {
                 }
 
             } catch (e: Exception) {
-                Log.e("HomeFragment", "Error fetching posts: ${e.message}", e)
-                Toast.makeText(requireContext(), "Error fetching posts: ${e.message}", Toast.LENGTH_LONG).show()
+                Log.e(TAG, "Error fetching posts: ${e.message}", e)
+                Toast.makeText(
+                    requireContext(),
+                    "Error fetching posts: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
                 binding.statusText.visibility = View.VISIBLE
                 binding.statusText.text = getString(R.string.activity_main_posts_err_loading)
             } finally {

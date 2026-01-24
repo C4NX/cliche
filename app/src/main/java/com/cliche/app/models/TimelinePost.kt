@@ -8,7 +8,7 @@ data class TimelinePost(
     val created_at: String,
     val caption: String?,
     val owner_id: String,
-    val owner_username: String,
+    val owner_username: String?,
     val owner_avatar_url: String?,
     val media_paths: List<String>,
     var likes_count: Long,

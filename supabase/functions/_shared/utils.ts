@@ -4,7 +4,6 @@ import {
     User,
 } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "./cors.ts";
-
 /**
  * Custom HTTP error class to encapsulate status codes.
  */
