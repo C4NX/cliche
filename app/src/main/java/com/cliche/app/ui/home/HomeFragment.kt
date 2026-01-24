@@ -8,10 +8,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.cliche.app.R
 import com.cliche.app.databinding.FragmentHomeBinding
-import com.cliche.app.models.Post
 import com.cliche.app.models.TimelinePost
 import com.cliche.app.services.api.PostApi
 import kotlinx.coroutines.launch
@@ -41,6 +42,20 @@ class HomeFragment : Fragment() {
         setupRecyclerView()
         fetchPosts()
 
+        binding.fabAddPost.setOnClickListener {
+
+            Log.d("HomeFragment", "Navigating to AddPostFragment")
+
+            // naviguer vers la destination ajoutée dans le nav graph
+            findNavController().navigate(R.id.navigation_add_post)
+        }
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            clearItems()
+            fetchPosts()
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
+
         return root
     }
 
@@ -54,7 +69,7 @@ class HomeFragment : Fragment() {
 
         // Effacer les données avant de recharger les données (quand lose focus)
         clearItems()
-    };
+    }
 
     private fun setupRecyclerView() {
         postsAdapter = PostsAdapter(mutableListOf(), object : PostsAdapter.OnPostActionListener {
@@ -63,13 +78,13 @@ class HomeFragment : Fragment() {
                 Log.d("HomeFragment", "onLike: ${post.id}")
 
                 lifecycleScope.launch {
-                    if(post.user_has_liked) {
+                    if(post.liked_by_user) {
                         PostApi.removeLike(post.id)
-                        post.user_has_liked = false
+                        post.liked_by_user = false
                         post.likes_count -= 1
                     } else {
                         PostApi.addLike(post.id)
-                        post.user_has_liked = true
+                        post.liked_by_user = true
                         post.likes_count += 1
                     }
                 }
@@ -134,13 +149,13 @@ class HomeFragment : Fragment() {
 
                 Log.d("HomeFragment", "Fetching posts from $start to $end")
 
-                val posts = PostApi.getTimeline(start.toLong(), end.toLong());
+                val posts = PostApi.fetchTimeline(start.toLong(), end.toLong())
 
                 if (posts.isNotEmpty()) {
                     postsAdapter.addAll(posts)
                 } else if(alreadyLoaded == 0) {
                     binding.statusText.visibility = View.VISIBLE
-                    binding.statusText.text = "No posts available."
+                    binding.statusText.text = getString(R.string.activity_main_posts_no_available)
                 }
 
                 if (posts.size < pageSize) {
@@ -151,7 +166,7 @@ class HomeFragment : Fragment() {
                 Log.e("HomeFragment", "Error fetching posts: ${e.message}", e)
                 Toast.makeText(requireContext(), "Error fetching posts: ${e.message}", Toast.LENGTH_LONG).show()
                 binding.statusText.visibility = View.VISIBLE
-                binding.statusText.text = "Error loading posts."
+                binding.statusText.text = getString(R.string.activity_main_posts_err_loading)
             } finally {
                 isLoading = false
             }

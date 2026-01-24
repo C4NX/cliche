@@ -23,7 +23,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginEnd="12dp"
-            android:contentDescription="@string/avatar_desc"
+            android:contentDescription="@string/activity_main_post_avatar_desc"
             android:scaleType="centerCrop"
             android:importantForAccessibility="no"
             android:src="@android:drawable/sym_def_app_icon" />
@@ -37,16 +37,15 @@
 
     </LinearLayout>
 
-    <!-- Post Image -->
-    <ImageView
-        android:id="@+id/ivPostImage"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vpPostImages"
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        android:background="#EEEEEE"
-        android:scaleType="centerCrop"
-        android:importantForAccessibility="no" />
+        android:clickable="false"
+        android:orientation="horizontal" />
 
-    <!-- Action Icons (Visual Only) -->
+
+    <!-- Action Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -59,7 +58,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@android:drawable/btn_star_big_on"
-            android:contentDescription="@string/desc_like"
+            android:contentDescription="@string/activity_main_post_desc_like"
             app:tint="#000000" />
 
         <ImageView
@@ -68,7 +67,7 @@
             android:layout_height="24dp"
             android:layout_marginStart="24dp"
             android:src="@android:drawable/ic_menu_edit"
-            android:contentDescription="@string/desc_comment"
+            android:contentDescription="@string/activity_main_post_desc_comment"
             app:tint="#000000" />
 
         <ImageView
@@ -77,7 +76,7 @@
             android:layout_height="24dp"
             android:layout_marginStart="24dp"
             android:src="@android:drawable/ic_menu_share"
-            android:contentDescription="@string/desc_share"
+            android:contentDescription="@string/activity_main_post_desc_share"
             app:tint="#000000" />
 
         <View
@@ -90,7 +89,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@android:drawable/ic_menu_save"
-            android:contentDescription="@string/desc_bookmark"
+            android:contentDescription="@string/activity_main_post_desc_bookmark"
             app:tint="#000000" />
 
     </LinearLayout>
@@ -102,7 +101,7 @@
         android:layout_height="wrap_content"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:text="@string/sample_likes"
+        android:text="@string/activity_main_post_likes"
         android:textColor="#000000"
         android:textSize="14sp" />
 
@@ -114,7 +113,7 @@
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
         android:paddingBottom="12dp"
-        android:text="@string/sample_likes"
+        android:text="@string/activity_main_post_likes"
         android:textColor="#000000"
         android:textSize="14sp" />
 

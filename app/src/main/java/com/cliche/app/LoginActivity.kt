@@ -11,9 +11,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.cliche.app.modules.supabaseClient
 import com.cliche.app.services.auth.AuthManager
 import com.cliche.app.utils.setVisible
 import com.google.android.material.tabs.TabLayout
+import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.launch
 
 class LoginActivity: AppCompatActivity() {
@@ -43,10 +45,10 @@ class LoginActivity: AppCompatActivity() {
         // Wait for authentication manager to be ready
         lifecycleScope.launch {
             AuthManager.waitToBeReady()
-
             val restoredUser = AuthManager.getUserOrNull()
             if(restoredUser != null){
                 Log.d(TAG, "Auth state restored for user id: ${restoredUser.id}")
+
                 closeAndStartMainActivity()
             } else {
                 Log.d(TAG, "No user restored after auth initialization.")
@@ -161,7 +163,7 @@ class LoginActivity: AppCompatActivity() {
      */
     private fun setupAppVersion() {
         val gitTagName = BuildConfig.TAG_NAME
-        versionTextView.setText(gitTagName)
+        versionTextView.text = gitTagName
     }
 
     /**
