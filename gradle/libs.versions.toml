@@ -2,6 +2,7 @@
 agp = "8.13.1"
 coil = "2.7.0"
 ktorClientOkhttp = "3.3.2"
+preferenceKtx = "1.2.1"
 supabaseKt = "3.2.0"
 kotlin = "2.2.21"
 coreKtx = "1.17.0"
@@ -20,6 +21,7 @@ swiperefreshlayout = "1.2.0"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
+androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorClientOkhttp" }
 supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabaseKt" }

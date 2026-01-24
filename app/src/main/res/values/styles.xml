@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.App.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="titleTextColor">?attr/colorOnPrimary</item>
+        <item name="titleCentered">true</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+    <style name="ThemeOverlay.App.Toolbar" parent="">
+        <item name="colorControlNormal">?attr/colorOnPrimary</item>
+    </style>
+</resources>
