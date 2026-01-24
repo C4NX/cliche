@@ -24,11 +24,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Définition de la top appbar comme action bar principal
+        // TopAppBar as main AppBar
         val toolbar: MaterialToolbar = findViewById(R.id.top_app_bar);
         setSupportActionBar(toolbar)
 
-        // Gestion barre de navigation inférieure
+        // NavBar management
         val navView: BottomNavigationView = binding.navView
 
         val navHostFragment = supportFragmentManager

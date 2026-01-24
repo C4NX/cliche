@@ -14,7 +14,9 @@
             android:id="@+id/settings_top_app_bar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            style="@style/Widget.App.Toolbar" />
+            style="@style/Widget.App.Toolbar"
+            android:theme="@style/ThemeOverlay.App.Toolbar"
+        />
 
     </com.google.android.material.appbar.AppBarLayout>
 
