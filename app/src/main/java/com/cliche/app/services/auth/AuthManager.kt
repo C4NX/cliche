@@ -66,10 +66,10 @@ object AuthManager {
     /**
      * Signs out the currently logged-in user.
      */
-    suspend fun signOut(context: Context) {
+    suspend fun signOut() {
         supabaseClient.auth.signOut()
         Log.d("AuthManager", "User signed out")
-        context.startActivity(Intent(context, LoginActivity::class.java))
+        //context.startActivity(Intent(context, LoginActivity::class.java))
     }
 
     /**
