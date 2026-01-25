@@ -54,3 +54,11 @@ set the `local.properties` like this:
 SUPABASE_URL=http://10.0.2.2:54321 (the Project URL from above, or 10.0.2.2 for android emulator)
 SUPABASE_ANON_KEY=<your-local-supabase-anon-key> (the Publishable API Key in Authentication Keys section of supabase cli output)
 ```
+
+## Seeding the Database
+
+A seed file is provided at `supabase/seed.sql`. You can run it with:
+
+```bash
+supabase db reset
+```
