@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -5,12 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Mock AppBar to force the rendering of StatusBar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:theme="@style/ThemeOverlay.App.Toolbar"
+            style="@style/Widget.App.Toolbar"
+            />
+    </com.google.android.material.appbar.AppBarLayout>
+
     <!-- Loading Screen -->
     <LinearLayout
         android:id="@+id/loadingScreen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#80000000"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="visible"
@@ -51,6 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            android:textColor="?attr/colorOnSurface"
             app:tabMode="fixed"
             app:tabGravity="fill" />
 
@@ -58,6 +72,7 @@
             android:id="@+id/usernameInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurface"
             android:hint="@string/activity_login_label_username"
             android:visibility="gone"
             android:inputType="textPersonName"
@@ -67,6 +82,7 @@
             android:id="@+id/emailInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurface"
             android:autofillHints="emailAddress"
             android:hint="@string/activity_login_label_email"
             android:inputType="textEmailAddress" />
@@ -75,6 +91,7 @@
             android:id="@+id/passwordInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurface"
             android:autofillHints="password"
             android:hint="@string/activity_login_label_password"
             android:inputType="textPassword" />
@@ -83,6 +100,7 @@
             android:id="@+id/loginBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnPrimary"
             android:text="@string/activity_login_login"
             app:icon="@drawable/baseline_login_24" />
 
@@ -91,7 +109,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/activity_login_register"
-            app:icon="@drawable/material_symbols__photo_camera_rounded"
+            app:icon="@drawable/ic_edit_square_24dp"
             android:visibility="gone" />
 
         <!-- googleBtn : styled without using MaterialButton -->
@@ -105,10 +123,10 @@
             android:gravity="center_vertical"
             android:text="@string/activity_login_google_sign_in"
             android:textAllCaps="false"
-            android:textColor="#3C4043"
+            android:textColor="?attr/colorOnSurface"
             android:drawableStart="@drawable/material_icon_theme__google"
             android:drawablePadding="12dp"
-            android:background="@drawable/google_btn_background"
+            android:background="?attr/colorSurface"
             android:drawableTint="@null" />
 
         <ProgressBar
@@ -124,7 +142,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="TextView"
+            android:text=""
             android:textAlignment="textEnd" />
 
     </LinearLayout>

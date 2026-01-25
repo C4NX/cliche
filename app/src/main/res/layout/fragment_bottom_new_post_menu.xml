@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#FFFFFF"
+    android:background="?attr/colorSurface"
     tools:context="com.cliche.app.ui.posts.NewPostFragment">
 
     <LinearLayout
@@ -44,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="240dp"
             android:layout_marginTop="12dp"
-            android:background="#f2f2f2"
+            android:background="?android:attr/colorBackground"
             android:foregroundGravity="center">
 
             <ImageView
@@ -71,7 +71,8 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/add_post_pick_image"
                     android:scaleType="fitCenter"
-                    android:src="@android:drawable/ic_menu_camera" />
+                    android:src="@drawable/ic_menu_camera_24dp"
+                    android:tint="?attr/colorTertiary"/>
 
                 <TextView
                     android:id="@+id/add_post_pick_text"
