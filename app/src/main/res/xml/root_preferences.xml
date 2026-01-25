@@ -8,4 +8,12 @@
             app:entryValues="@array/theme_values"
             app:defaultValue="system" />
     </PreferenceCategory>
+    <PreferenceCategory app:title="@string/title_settings_accessibility">
+        <ListPreference
+            app:key="language"
+            app:title="@string/subtitle_settings_language"
+            app:entries="@array/language_entries"
+            app:entryValues="@array/language_values"
+            app:defaultValue="fr" />
+    </PreferenceCategory>
 </androidx.preference.PreferenceScreen>

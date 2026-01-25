@@ -20,11 +20,9 @@ class SettingsActivity : AppCompatActivity() {
                 .commit()
         }
 
-        // Affiche la flèche "retour" dans la topbar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    // Gère le clic sur la flèche "retour"
     override fun onSupportNavigateUp(): Boolean {
         onBackPressedDispatcher.onBackPressed()
         return true
