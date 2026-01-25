@@ -3,6 +3,7 @@ package com.cliche.app.ui.home
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -85,13 +86,8 @@ class PostsAdapter(
         holder.tvCaption.text = post.caption
 
         // Gestion état de like
-        val isLiked = post.liked_by_user
-        if(isLiked) {
-            likedIds.add(post.id)
-        }
-
-        holder.ivLike.alpha = if (isLiked) 1.0f else 0.8f
-        holder.ivLike.setColorFilter(if (isLiked) Color.RED else Color.DKGRAY)
+        val isLiked = post.liked_by_user || likedIds.contains(post.id)
+        updateLikeState(holder, isLiked)
 
         // Listeners
         holder.ivLike.setOnClickListener { v ->
@@ -142,7 +138,7 @@ class PostsAdapter(
         }.start()
 
         // Met à jour l'UI (couleur et nombre de likes)
-        holder.ivLike.setColorFilter(if (nowLiked) Color.RED else Color.DKGRAY)
+        updateLikeState(holder, nowLiked)
         holder.tvLikes.text = if (nowLiked) {
             post.likes_count + 1
         } else {
@@ -162,5 +158,29 @@ class PostsAdapter(
     fun clear() {
         items.clear()
         notifyDataSetChanged()
+    }
+
+    /**
+     * Helper pour mettre à jour l'état du bouton "like" d'un post.
+     */
+    private fun updateLikeState(holder: ViewHolder, isLiked: Boolean) {
+        holder.ivLike.setImageResource(
+            if (isLiked)
+                R.drawable.ic_favorite_filled_24dp
+            else
+                R.drawable.ic_favorite_border_24dp
+        )
+
+        val typedValue = TypedValue()
+        val theme = holder.itemView.context.theme
+
+        theme.resolveAttribute(
+            if (isLiked)
+                com.google.android.material.R.attr.colorPrimary
+            else
+                com.google.android.material.R.attr.colorOnSurface
+            , typedValue, true
+        )
+        holder.ivLike.setColorFilter(typedValue.data)
     }
 }

@@ -2,7 +2,7 @@ import {
     createClient,
     SupabaseClient,
     User,
-} from "https://esm.sh/@supabase/supabase-js@2";
+} from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "./cors.ts";
 
 /**

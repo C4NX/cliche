@@ -4,5 +4,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scaleType="centerCrop"
-    android:background="#EEEEEE"
+    android:background="?android:attr/colorBackground"
     android:contentDescription="@string/activity_main_post_image_desc" />
