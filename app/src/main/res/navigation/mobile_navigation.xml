@@ -26,8 +26,7 @@
     <fragment
         android:id="@+id/navigation_add_post"
         android:name="com.cliche.app.ui.posts.NewPostFragment"
-        android:label="@string/add_post_title"
-        tools:layout="@layout/fragment_add_post" />
+        android:label="@string/add_post_title" />
 
     <fragment
         android:id="@+id/navigation_profile"
