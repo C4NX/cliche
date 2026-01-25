@@ -62,6 +62,8 @@
     <string name="activity_main_posts_err_loading">Error loading posts.</string>
     <string name="activity_main_posts_loading">Loading posts…</string>
 
+    <string name="activity_main_bookmarks_empty">No bookmarks yet.</string>
+
     <string name="cancel">Cancel</string>
     <string name="error_not_authorized">You are not authorized to perform this action.</string>
     <string name="error_generic">An error occurred: %1$s</string>
@@ -72,6 +74,7 @@
     <string name="profile_bio_hint">Bio</string>
     <string name="profile_save">Save profile</string>
     <string name="profile_my_posts">My posts</string>
+    <string name="title_bookmarks">Bookmarks</string>
     <string name="profile_user_posts">Posts by %1$s</string>
     <string name="profile_desc_edit_profile">Edit profile</string>
 </resources>

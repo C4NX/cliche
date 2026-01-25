@@ -113,6 +113,10 @@ class MainActivity : AppCompatActivity() {
                 navController.navigate(R.id.navigation_profile)
                 true
             }
+            R.id.bookmarks -> {
+                navController.navigate(R.id.navigation_bookmarks)
+                true
+            }
             R.id.settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)

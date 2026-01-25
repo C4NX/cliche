@@ -10,6 +10,7 @@ import com.cliche.app.R
 import com.cliche.app.models.TimelinePost
 import com.cliche.app.services.api.PostApi
 import com.cliche.app.ui.profile.ProfileFragment
+import com.cliche.app.ui.bookmarks.BookmarksFragment
 import kotlinx.coroutines.launch
 
 /**
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 class TimelinePostActionListener(
     private val fragment: Fragment
 ) : PostsAdapter.OnPostActionListener {
-    var TAG = "TimelinePostActionListener"
+    private var TAG = "TimelinePostActionListener"
 
     override fun onLike(post: TimelinePost) {
         Log.d(TAG, "onLike: ${post.id}")
@@ -49,9 +50,25 @@ class TimelinePostActionListener(
     }
 
     override fun onBookmark(post: TimelinePost) {
-        Toast.makeText(fragment.requireContext(), "Bookmarked post ${post.id}", Toast.LENGTH_SHORT)
-            .show()
         Log.d(TAG, "onBookmark: ${post.id}")
+
+        fragment.viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                if (post.bookmarked_by_user) {
+                    PostApi.unbookmark(post.id)
+                    post.bookmarked_by_user = false
+                    if (fragment is BookmarksFragment) {
+                        fragment.removePostById(post.id)
+                    }
+                } else {
+                    PostApi.bookmark(post.id)
+                    post.bookmarked_by_user = true
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error toggling bookmark: ${e.message}")
+                Toast.makeText(fragment.requireContext(), "Error toggling bookmark", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onItemClick(post: TimelinePost) {
