@@ -87,6 +87,7 @@ class PostsAdapter(
         holder.tvCaption.text = post.caption
 
         updateLikeState(holder, post.liked_by_user)
+        updateBookmarkState(holder, post.bookmarked_by_user)
 
         // Listeners
         holder.ivLike.setOnClickListener { v ->
@@ -136,8 +137,18 @@ class PostsAdapter(
             }
         }
 
-        holder.ivBookmark.setOnClickListener {
-            listener?.onBookmark(post)
+        holder.ivBookmark.setOnClickListener { v ->
+            try {
+                val alreadyBookmarked = post.bookmarked_by_user
+                listener?.onBookmark(post)
+
+                post.bookmarked_by_user = !alreadyBookmarked
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in onBookmark callback: ${e.message}")
+                Toast.makeText(v.context, "Error in onBookmark callback: ${e.message}", Toast.LENGTH_LONG).show()
+            } finally {
+                doBookmarkClickOnHolder(holder, post)
+            }
         }
 
         holder.itemView.setOnClickListener {
@@ -167,6 +178,17 @@ class PostsAdapter(
         holder.tvLikes.text = updatedPost.likes_count.toString() + " likes"
     }
 
+    /**
+     * Gère le clic sur le bouton "bookmark" d'un post.
+     */
+    private fun doBookmarkClickOnHolder(holder: ViewHolder, updatedPost: TimelinePost) {
+        holder.ivBookmark.animate().scaleX(1.2f).scaleY(1.2f).setDuration(120).withEndAction {
+            holder.ivBookmark.animate().scaleX(1f).scaleY(1f).setDuration(120).start()
+        }.start()
+
+        updateBookmarkState(holder, updatedPost.bookmarked_by_user)
+    }
+
     override fun getItemCount(): Int = items.size
 
     fun addAll(newItems: List<TimelinePost>) {
@@ -179,6 +201,21 @@ class PostsAdapter(
     fun clear() {
         items.clear()
         notifyDataSetChanged()
+    }
+
+    /**
+     * Remove a post by its id from the adapter.
+     * @return true if an item was removed
+     */
+    fun removeById(id: Long): Boolean {
+        val idx = items.indexOfFirst { it.id == id }
+        return if (idx >= 0) {
+            items.removeAt(idx)
+            notifyItemRemoved(idx)
+            true
+        } else {
+            false
+        }
     }
 
     /**
@@ -203,5 +240,29 @@ class PostsAdapter(
             , typedValue, true
         )
         holder.ivLike.setColorFilter(typedValue.data)
+    }
+
+    /**
+     * Helper pour mettre à jour l'état du bouton "bookmark" d'un post.
+     */
+    private fun updateBookmarkState(holder: ViewHolder, isBookmarked: Boolean) {
+        holder.ivBookmark.setImageResource(
+            if (isBookmarked)
+                R.drawable.ic_bookmark_filled_24dp
+            else
+                R.drawable.ic_bookmark_border_24dp
+        )
+
+        val typedValue = TypedValue()
+        val theme = holder.itemView.context.theme
+
+        theme.resolveAttribute(
+            if (isBookmarked)
+                com.google.android.material.R.attr.colorPrimary
+            else
+                com.google.android.material.R.attr.colorOnSurface
+            , typedValue, true
+        )
+        holder.ivBookmark.setColorFilter(typedValue.data)
     }
 }

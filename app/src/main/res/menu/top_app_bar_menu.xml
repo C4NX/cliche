@@ -17,6 +17,13 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/bookmarks"
+        android:title="@string/title_bookmarks"
+        android:icon="@drawable/ic_bookmark_filled_24dp"
+        android:iconTint="?attr/colorOnSurface"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/logout"
         android:title="@string/activity_login_logout"
         android:icon="@drawable/mdi__logout"

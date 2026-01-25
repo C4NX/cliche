@@ -2,6 +2,7 @@ package com.cliche.app.services.api
 
 import android.util.Log
 import com.cliche.app.models.Like
+import com.cliche.app.models.Bookmark
 import com.cliche.app.models.Post
 import com.cliche.app.models.TimelinePost
 import com.cliche.app.modules.supabaseClient
@@ -58,6 +59,21 @@ object PostApi {
             .select {
                 order("created_at", Order.DESCENDING)
                 range(start, end)
+            }
+            .decodeList<TimelinePost>()
+    }
+
+    /**
+     * Fetch posts bookmarked by the current user.
+     */
+    suspend fun fetchBookmarked(start: Long, end: Long): List<TimelinePost> {
+        Log.d(TAG, "Fetching bookmarked posts from $start to $end")
+
+        return supabaseClient.postgrest.from("timeline")
+            .select {
+                order("created_at", Order.DESCENDING)
+                range(start, end)
+                filter { eq("bookmarked_by_user", true) }
             }
             .decodeList<TimelinePost>()
     }
@@ -170,6 +186,43 @@ object PostApi {
                 filter {
                     eq("post_id", postId)
                     eq("user_id", userId)
+                }
+            }
+    }
+
+
+    /**
+     * Bookmarks a post for the current user.
+     *
+     * @param postId The ID of the post to bookmark.
+     */
+    suspend fun bookmark(postId: Long) {
+        val userId = requireUserId()
+
+        supabaseClient.postgrest
+            .from("bookmarks")
+            .upsert(
+                Bookmark(
+                    post_id = postId,
+                    profile_id = userId
+                )
+            )
+    }
+
+    /**
+     * Removes the bookmark for the current user on the given post.
+     *
+     * @param postId The ID of the post to unbookmark.
+     */
+    suspend fun unbookmark(postId: Long) {
+        val userId = requireUserId()
+
+        supabaseClient.postgrest
+            .from("bookmarks")
+            .delete {
+                filter {
+                    eq("post_id", postId)
+                    eq("profile_id", userId)
                 }
             }
     }
