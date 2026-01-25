@@ -6,6 +6,7 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.functions.Functions
 import io.github.jan.supabase.storage.Storage
+import io.github.jan.supabase.realtime.Realtime
 
 /**
  * Supabase client instance for interacting with the Supabase backend.
@@ -24,5 +25,6 @@ val supabaseClient by lazy {
         install(Postgrest)
         install(Functions)
         install(Storage)
+        install(Realtime)
     }
 }
