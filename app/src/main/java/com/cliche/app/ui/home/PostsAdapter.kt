@@ -219,6 +219,22 @@ class PostsAdapter(
     }
 
     /**
+     * Update an existing post by id with a fresh `TimelinePost` data.
+     * If found, replaces the item and notifies that position changed.
+     * @return true if an item was updated
+     */
+    fun updateItem(updated: TimelinePost): Boolean {
+        val idx = items.indexOfFirst { it.id == updated.id }
+        return if (idx >= 0) {
+            items[idx] = updated
+            notifyItemChanged(idx)
+            true
+        } else {
+            false
+        }
+    }
+
+    /**
      * Helper pour mettre à jour l'état du bouton "like" d'un post.
      */
     private fun updateLikeState(holder: ViewHolder, isLiked: Boolean) {

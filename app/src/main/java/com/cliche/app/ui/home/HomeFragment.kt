@@ -67,6 +67,16 @@ class HomeFragment : Fragment() {
     }
 
     /**
+     * Called when the fragment is visible to the user and actively running.
+     */
+    override fun onResume() {
+        super.onResume()
+        if (postsAdapter.itemCount == 0) {
+            fetchPosts()
+        }
+    }
+
+    /**
      * Setup the RecyclerView with adapter and scroll listener for pagination.
      */
     private fun setupRecyclerView() {

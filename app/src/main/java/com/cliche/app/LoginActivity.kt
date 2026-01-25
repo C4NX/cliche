@@ -47,7 +47,14 @@ class LoginActivity: AppCompatActivity() {
             if(restoredUser != null){
                 Log.d(TAG, "Auth state restored for user id: ${restoredUser.id}")
 
-                closeAndStartMainActivity()
+                // Check if we have a postId to open from intent extras
+                var postId: Long? = null
+                val intentPostId = intent.getLongExtra("postId", -1)
+                if(intentPostId != -1L){
+                    postId = intentPostId
+                }
+
+                closeAndStartMainActivity(postId)
             } else {
                 Log.d(TAG, "No user restored after auth initialization.")
 
@@ -190,8 +197,12 @@ class LoginActivity: AppCompatActivity() {
     /**
      * Starts the MainActivity and finishes the current LoginActivity.
      */
-    private fun closeAndStartMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun closeAndStartMainActivity(postId: Long? = null) {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            if (postId != null) {
+                putExtra("postId", postId)
+            }
+        }
         startActivity(intent)
         finish() // prevents returning to login screen with back button
     }

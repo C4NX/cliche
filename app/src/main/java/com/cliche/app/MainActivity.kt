@@ -7,9 +7,12 @@ import android.view.MenuItem
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import android.view.View
+import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.NavController
@@ -21,6 +24,7 @@ import com.cliche.app.databinding.ActivityMainBinding
 import com.cliche.app.modules.supabaseClient
 import com.cliche.app.services.auth.AuthManager
 import com.cliche.app.settings.SettingsActivity
+import com.cliche.app.ui.posts.PostFragment
 import com.google.android.material.appbar.MaterialToolbar
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
@@ -30,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+
+    private val REQUEST_POST_NOTIFICATIONS = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,6 +96,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        handleIntentParams(intent)
+
         lifecycleScope.launch {
             // Observe authentication state (sign-in/sign-out)
             supabaseClient.auth.sessionStatus.collect {
@@ -102,11 +110,70 @@ class MainActivity : AppCompatActivity() {
                         finish()
                     }
                     else -> {
-                        // When user is authenticated
+//                        // When user is authenticated
+//                        // Check notification permission on Android 13+
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                            val hasPerm = ContextCompat.checkSelfPermission(
+//                                this@MainActivity,
+//                                Manifest.permission.POST_NOTIFICATIONS
+//                            ) == PackageManager.PERMISSION_GRANTED
+//
+//                            if (!hasPerm) {
+//                                ActivityCompat.requestPermissions(
+//                                    this@MainActivity,
+//                                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+//                                    REQUEST_POST_NOTIFICATIONS
+//                                )
+//                            } else {
+//                                // Permission already granted
+//                                Toast.makeText(this@MainActivity, "Realtime likes enabled", Toast.LENGTH_SHORT).show()
+//                                LikesRealtimeService.start(this@MainActivity)
+//                            }
+//                        } else {
+//                            // No runtime permission needed on older Android versions
+//                            Toast.makeText(this@MainActivity, "Realtime likes enabled", Toast.LENGTH_SHORT).show()
+//                            LikesRealtimeService.start(this@MainActivity)
+//                        }
                     }
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntentParams(intent)
+    }
+
+    /**
+     * Handle intent parameters for navigation (e.g., from notifications)
+     */
+    private fun handleIntentParams(intent: Intent) {
+        val notifPostId = intent.getLongExtra("postId", -1L)
+        if (notifPostId > 0L) {
+            val args = Bundle().apply { putLong(PostFragment.ARG_POST_ID, notifPostId) }
+            navController.navigate(R.id.navigation_post, args)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == REQUEST_POST_NOTIFICATIONS) {
+            val granted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            if (granted) {
+                Toast.makeText(this, "Notifications permission granted — realtime likes enabled", Toast.LENGTH_SHORT).show()
+//                // Start the listener after permission is granted
+//                lifecycleScope.launch {
+//                    LikesRealtimeService.start(this@MainActivity)
+//                }
+            } else {
+                Toast.makeText(this, "Notifications disabled — likes listener still runs without alerts", Toast.LENGTH_SHORT).show()
+            }
+        }
+        return super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
