@@ -19,6 +19,7 @@ navigationUiKtx = "2.6.0"
 swiperefreshlayout = "1.2.0"
 playServicesLocation = "21.3.0"
 activityKtx = "1.9.2"
+uiText = "1.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +45,7 @@ realtime-kt = { module = "io.github.jan-tennert.supabase:realtime-kt" }
 functions-kt = { module = "io.github.jan-tennert.supabase:functions-kt" }
 storage-kt = { module = "io.github.jan-tennert.supabase:storage-kt" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+androidx-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiText" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

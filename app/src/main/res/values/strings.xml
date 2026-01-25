@@ -1,12 +1,11 @@
 <resources>
     <string name="app_name">Cliché</string>
-    <string name="title_home">Cliché</string>
     <string name="title_map">Map</string>
     <string name="title_notifications">Notifications</string>
     <string name="activity_login_label_email">Email</string>
     <string name="activity_login_label_password">Password</string>
     <string name="activity_login_login">Login</string>
-    <string name="activity_login_logout">Log Out</string>
+    <string name="activity_login_logout">Logout</string>
     <string name="activity_main_post_user_prefix">User #%1$d</string>
     <string name="activity_main_post_avatar_desc">Avatar</string>
     <string name="title_settings">Settings</string>
@@ -16,7 +15,7 @@
     <string name="subtitle_settings_theme">Application Theme</string>
     <string name="label_theme_light">Light</string>
     <string name="label_theme_dark">Dark</string>
-    <string name="label_theme_system">System Default</string>
+    <string name="label_system">System</string>
     <string name="title_settings_accessibility">Accessibility</string>
     <string name="subtitle_settings_language">Language</string>
     <string name="label_english">English</string>
