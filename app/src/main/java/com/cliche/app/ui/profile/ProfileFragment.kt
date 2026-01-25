@@ -182,6 +182,7 @@ class ProfileFragment : Fragment() {
      */
     private fun loadProfileAndPosts() {
         lifecycleScope.launch {
+            setLoadingState(true)
             try {
                 val profileUserId = getProfileUserId()
                 val isCurrentUser = isCurrentUser()
@@ -214,6 +215,8 @@ class ProfileFragment : Fragment() {
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading profile or posts", e)
                 Toast.makeText(requireContext(), "Error loading profile or posts: ${e.message}", Toast.LENGTH_LONG).show()
+            } finally {
+                setLoadingState(false)
             }
         }
     }
@@ -246,6 +249,7 @@ class ProfileFragment : Fragment() {
         val bio = binding.etBio.text.toString().trim()
 
         lifecycleScope.launch {
+            setLoadingState(true)
             try {
                 val userId = requireUserId()
                 val usernameChange = if (profile?.username != username) username else null
@@ -274,6 +278,8 @@ class ProfileFragment : Fragment() {
             } catch (e: Exception) {
                 Log.e(TAG, "Error saving profile", e)
                 Toast.makeText(requireContext(), "Error saving profile: ${e.message}", Toast.LENGTH_LONG).show()
+            } finally {
+                setLoadingState(false)
             }
         }
     }
@@ -295,6 +301,14 @@ class ProfileFragment : Fragment() {
      */
     private fun isCurrentUser(): Boolean {
         return requireUserId() == getProfileUserId()
+    }
+
+    /**
+     * Toggle UI into a loading state: show progress bar and disable inputs.
+     */
+    private fun setLoadingState(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.contentContainer.visibility = if (isLoading) View.GONE else View.VISIBLE
     }
 
     override fun onDestroyView() {

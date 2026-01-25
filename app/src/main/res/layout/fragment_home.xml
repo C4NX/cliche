@@ -5,19 +5,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- FAB: bottom-right, above everything -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_post"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:layout_marginBottom="60dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:contentDescription="Add Post"
-        android:src="@android:drawable/ic_input_add" />
-
     <!-- RecyclerView container -->
     <LinearLayout
         android:layout_width="match_parent"

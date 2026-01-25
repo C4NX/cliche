@@ -40,12 +40,6 @@ class HomeFragment : Fragment() {
         setupRecyclerView()
         fetchPosts()
 
-        binding.fabAddPost.setOnClickListener {
-            Log.d(TAG, "Navigating to AddPostFragment")
-            findNavController()
-                .navigate(R.id.navigation_add_post)
-        }
-
         binding.swipeRefreshLayout.setOnRefreshListener {
             clearItems()
             fetchPosts()

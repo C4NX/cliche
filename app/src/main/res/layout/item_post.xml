@@ -91,9 +91,19 @@
                 android:layout_weight="1" />
 
             <ImageView
+                android:id="@+id/iv_location"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="24dp"
+                android:contentDescription="@string/activity_main_post_desc_location"
+                android:src="@drawable/ic_location_filled_24dp"
+                app:tint="?attr/colorOnSurface" />
+
+            <ImageView
                 android:id="@+id/iv_bookmark"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:layout_marginStart="24dp"
                 android:contentDescription="@string/activity_main_post_desc_bookmark"
                 android:src="@drawable/ic_bookmark_border_24dp"
                 app:tint="?attr/colorOnSurface" />

@@ -63,6 +63,14 @@ class TimelinePostActionListener(
     }
 
     override fun onProfileClick(userId: String) {
+        if(fragment is ProfileFragment) {
+            val profileFragmentUserId = fragment.arguments?.getString(ProfileFragment.ARG_USER_ID)
+            if (profileFragmentUserId == userId) {
+                // already on the profile page of the user
+                return
+            }
+        }
+
         fragment.findNavController()
             .navigate(R.id.navigation_profile, Bundle().apply {
                 putString(ProfileFragment.ARG_USER_ID, userId)

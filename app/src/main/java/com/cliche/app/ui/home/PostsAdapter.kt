@@ -2,15 +2,12 @@ package com.cliche.app.ui.home
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Color
-import android.net.Uri
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.google.android.material.button.MaterialButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +17,7 @@ import com.cliche.app.R
 import com.cliche.app.models.TimelinePost
 import com.cliche.app.services.api.PostApi
 import com.cliche.app.services.api.ProfileApi
+import androidx.core.net.toUri
 
 /**
  * Adapter pour l'affichage des posts dans un RecyclerView.
@@ -53,7 +51,7 @@ class PostsAdapter(
         val ivLike: ImageView = itemView.findViewById(R.id.iv_like)
         val ivComment: ImageView = itemView.findViewById(R.id.iv_comment)
         val ivShare: ImageView = itemView.findViewById(R.id.iv_share)
-        val btnLocation: MaterialButton = itemView.findViewById(R.id.btn_location)
+        val ivLocation: ImageView = itemView.findViewById(R.id.iv_location)
         val ivBookmark: ImageView = itemView.findViewById(R.id.iv_bookmark)
     }
 
@@ -120,16 +118,15 @@ class PostsAdapter(
             listener?.onShare(post)
         }
 
-        // Location button: visible only if both latitude and longitude are present
         val hasLocation = (post.latitude != null && post.longitude != null)
-        holder.btnLocation.visibility = if (hasLocation) View.VISIBLE else View.GONE
+        holder.ivLocation.visibility = if (hasLocation) View.VISIBLE else View.GONE
         if (hasLocation) {
-            holder.btnLocation.setOnClickListener { v ->
+            holder.ivLocation.setOnClickListener { v ->
                 try {
-                    val lat = post.latitude!!
-                    val lon = post.longitude!!
+                    val lat = post.latitude
+                    val lon = post.longitude
                     // Use geo URI to open in map apps
-                    val uri = Uri.parse("geo:$lat,$lon?q=$lat,$lon")
+                    val uri = "geo:$lat,$lon?q=$lat,$lon".toUri()
                     val intent = Intent(Intent.ACTION_VIEW, uri)
                     v.context.startActivity(intent)
                 } catch (e: Exception) {
