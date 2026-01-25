@@ -5,8 +5,9 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.menu.MenuBuilder
 import androidx.lifecycle.lifecycleScope
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -27,8 +28,6 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-
-    // expose navController and appBarConfiguration to be used by onSupportNavigateUp
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
 
@@ -42,8 +41,11 @@ class MainActivity : AppCompatActivity() {
         val toolbar: MaterialToolbar = findViewById(R.id.top_app_bar);
         setSupportActionBar(toolbar)
 
-        // NavBar management
-        val navView: BottomNavigationView = binding.navView
+        // NavBar/Drawer management
+        val bottomNavView = findViewById<BottomNavigationView?>(R.id.nav_view)
+        val drawerNavView = findViewById<NavigationView?>(R.id.drawer_nav_view)
+        val containerView = findViewById<View?>(R.id.container)
+        val drawerLayout = containerView as? androidx.drawerlayout.widget.DrawerLayout
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
@@ -51,36 +53,39 @@ class MainActivity : AppCompatActivity() {
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        this.appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_map, R.id.navigation_notifications
-            )
+        val topLevel = setOf(
+            R.id.navigation_home, R.id.navigation_map, R.id.navigation_notifications
         )
+        this.appBarConfiguration = if (drawerLayout != null) {
+            AppBarConfiguration(topLevel, drawerLayout)
+        } else {
+            AppBarConfiguration(topLevel)
+        }
 
         setupActionBarWithNavController(this.navController, this.appBarConfiguration)
-        navView.setupWithNavController(this.navController)
+        bottomNavView?.setupWithNavController(this.navController)
+        drawerNavView?.setupWithNavController(this.navController)
 
         // Show a '+' on the top-left (navigation icon) for top-level screens
-        val topLevelDestinations = setOf(
-            R.id.navigation_home,
-            R.id.navigation_map,
-            R.id.navigation_notifications
-        )
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (topLevelDestinations.contains(destination.id)) {
-                val icon = ContextCompat.getDrawable(this, R.drawable.material_symbols__add_a_photo_rounded)
-                if (icon != null) {
-                    DrawableCompat.setTint(icon, ContextCompat.getColor(this, android.R.color.white))
+        // Only override the navigation icon to '+' when there's no drawer.
+        if (drawerLayout == null) {
+            val topLevelDestinations = topLevel
+            navController.addOnDestinationChangedListener { _, destination, _ ->
+                if (topLevelDestinations.contains(destination.id)) {
+                    val icon = ContextCompat.getDrawable(this, R.drawable.material_symbols__add_a_photo_rounded)
+                    if (icon != null) {
+                        DrawableCompat.setTint(icon, ContextCompat.getColor(this, android.R.color.white))
+                    }
+                    toolbar.navigationIcon = icon
+                    toolbar.navigationContentDescription = getString(R.string.add_post_title)
+                    toolbar.setNavigationOnClickListener {
+                        navController.navigate(R.id.navigation_add_post)
+                    }
+                } else {
+                    // For non top-level screens, keep default back/up behavior
+                    toolbar.navigationContentDescription = null
+                    toolbar.setNavigationOnClickListener { onSupportNavigateUp() }
                 }
-                toolbar.navigationIcon = icon
-                toolbar.navigationContentDescription = getString(R.string.add_post_title)
-                toolbar.setNavigationOnClickListener {
-                    navController.navigate(R.id.navigation_add_post)
-                }
-            } else {
-                // For non top-level screens, keep default back/up behavior
-                toolbar.navigationContentDescription = null
-                toolbar.setNavigationOnClickListener { onSupportNavigateUp() }
             }
         }
 
