@@ -17,12 +17,14 @@ import com.cliche.app.ui.home.PostsAdapter
 import com.cliche.app.ui.home.TimelinePostActionListener
 import kotlinx.coroutines.launch
 
+/**
+ * A fragment representing a list of bookmarked posts.
+ */
 class BookmarksFragment : Fragment() {
     private val TAG = "BookmarksFragment"
 
     private var _binding: FragmentBookmarksBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var postsAdapter: PostsAdapter
     private var isLoading = false
     private var isLastPage = false
@@ -131,6 +133,8 @@ class BookmarksFragment : Fragment() {
 
     /**
      * Removes a post from the list and updates empty state when needed.
+     *
+     * @param id The ID of the post to remove.
      */
     fun removePostById(id: Long) {
         val removed = postsAdapter.removeById(id)

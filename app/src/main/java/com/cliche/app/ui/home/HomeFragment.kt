@@ -16,6 +16,7 @@ import com.cliche.app.databinding.FragmentHomeBinding
 import com.cliche.app.models.TimelinePost
 import com.cliche.app.services.api.PostApi
 import com.cliche.app.ui.profile.ProfileFragment
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
@@ -108,7 +109,7 @@ class HomeFragment : Fragment() {
         if (isLoading || isLastPage) return
         isLoading = true
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             binding.statusText.visibility = View.GONE
 
             try {
@@ -132,12 +133,17 @@ class HomeFragment : Fragment() {
                 }
 
             } catch (e: Exception) {
+                if (e is CancellationException) {
+                    return@launch
+                }
                 Log.e(TAG, "Error fetching posts: ${e.message}", e)
-                Toast.makeText(
-                    requireContext(),
-                    "Error fetching posts: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                context?.let {
+                    Toast.makeText(
+                        it,
+                        "Error fetching posts: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
                 binding.statusText.visibility = View.VISIBLE
                 binding.statusText.text = getString(R.string.activity_main_posts_err_loading)
             } finally {

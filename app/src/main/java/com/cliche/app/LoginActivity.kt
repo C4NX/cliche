@@ -11,11 +11,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.cliche.app.modules.supabaseClient
 import com.cliche.app.services.auth.AuthManager
 import com.cliche.app.utils.setVisible
 import com.google.android.material.tabs.TabLayout
-import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.launch
 
 class LoginActivity: AppCompatActivity() {

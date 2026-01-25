@@ -10,7 +10,6 @@
     <string name="activity_main_post_avatar_desc">Avatar</string>
     <string name="title_settings">Paramètres</string>
     <string name="title_profile">Profil</string>
-
     <string name="title_settings_appearance">Apparence</string>
     <string name="subtitle_settings_theme">Thème de l\'Application</string>
     <string name="label_theme_light">Clair</string>
@@ -20,9 +19,6 @@
     <string name="subtitle_settings_language">Language</string>
     <string name="label_english">English</string>
     <string name="label_french">Français</string>
-
-
-    <!-- Added strings required by item_instagram_post.xml -->
     <string name="avatar_desc">Avatar</string>
     <string name="username_placeholder">nom d\'utilisateur</string>
     <string name="activity_main_post_desc_like">Like</string>
@@ -57,16 +53,12 @@
     <string name="add_post_select_title">Selectionnez une image</string>
     <string name="add_post_select_capture">Prendre une photo</string>
     <string name="camera_permission_rationale">L\'accès à la caméra est nécessaire.</string>
-
     <string name="activity_main_posts_no_available">Aucun post disponible.</string>
     <string name="activity_main_posts_err_loading">Erreur lors du chargement des posts.</string>
     <string name="activity_main_posts_loading">Chargement des posts…</string>
-
     <string name="cancel">Annuler</string>
     <string name="error_not_authorized">Vous n\'êtes pas autorisé à effectuer cette action.</string>
     <string name="error_generic">Une erreur est survenue: %1$s</string>
-
-    <!-- Profile screen strings -->
     <string name="profile_change_avatar">Modifier avatar</string>
     <string name="profile_username_hint">Nom complet</string>
     <string name="profile_bio_hint">Bio</string>
@@ -74,4 +66,6 @@
     <string name="profile_my_posts">Mes posts</string>
     <string name="profile_user_posts">Posts de %1$s</string>
     <string name="profile_desc_edit_profile">Modifier profil</string>
+    <string name="activity_main_bookmarks_empty">Aucun favori pour le moment.</string>
+    <string name="title_bookmarks">Favoris</string>
 </resources>

@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         val toolbar: MaterialToolbar = findViewById(R.id.top_app_bar);
         setSupportActionBar(toolbar)
 
-        // NavBar/Drawer management
+        // NavBar/Drawer
         val bottomNavView = findViewById<BottomNavigationView?>(R.id.nav_view)
         val drawerNavView = findViewById<NavigationView?>(R.id.drawer_nav_view)
         val containerView = findViewById<View?>(R.id.container)
@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity() {
             AppBarConfiguration(topLevel)
         }
 
+        // Setup ActionBar, BottomNavView and DrawerNavView with NavController
         setupActionBarWithNavController(this.navController, this.appBarConfiguration)
         bottomNavView?.setupWithNavController(this.navController)
         drawerNavView?.setupWithNavController(this.navController)
@@ -90,6 +91,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
+            // Observe authentication state (sign-in/sign-out)
             supabaseClient.auth.sessionStatus.collect {
                 when (it) {
                     is SessionStatus.NotAuthenticated -> {
@@ -137,7 +139,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Ensure Up button works and is delegated to NavController
     override fun onSupportNavigateUp(): Boolean {
         return NavigationUI.navigateUp(navController, appBarConfiguration) || super.onSupportNavigateUp()
     }

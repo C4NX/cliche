@@ -2,6 +2,7 @@ package com.cliche.app.ui.posts
 
 import android.net.Uri
 import android.os.Bundle
+import android.os.LocaleList
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -83,6 +84,9 @@ class NewPostFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Keep keyboard language following system locale, not app locale
+        binding.addPostCaption.setTextLocales(LocaleList.getDefault())
 
         binding.addPostPickImage.setOnClickListener { showImageSourceDialog() }
         binding.addPostPickContainer.setOnClickListener { showImageSourceDialog() }
