@@ -1,0 +1,59 @@
+name: Debug Build & Upload
+
+on:
+  push:
+    tags:
+      - '*'
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+  APK_PATH: app/build/outputs/apk/debug/app-debug.apk
+
+jobs:
+  build_and_upload_debug:
+    name: Build and upload debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Write local.properties from secrets and git info
+        run: |
+          set -e
+          # Prefer runner-provided ANDROID_SDK_ROOT, otherwise fallback to a common path
+          SDK_DIR="${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}"
+          echo "sdk.dir=$SDK_DIR" > local.properties
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> local.properties
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> local.properties
+
+          # Determine tag name if this run was triggered by a tag push
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+          else
+            TAG_NAME=""
+          fi
+          echo "GIT_TAG=$TAG_NAME" >> local.properties
+
+          # Commit information
+          echo "GIT_COMMIT_SHA=${GITHUB_SHA}" >> local.properties
+
+      - name: Build debug APK
+        run: ./gradlew :app:assembleDebug --no-daemon
+
+      - name: Upload debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: |
+            ${{ env.APK_PATH }}
+            app/build/outputs/apk/**/app-debug*.apk

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.App.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="titleTextColor">?attr/colorOnPrimary</item>
+        <item name="titleCentered">true</item>
+        <item name="popupTheme">@style/ThemeOverlay.App.PopupMenu</item>
+    </style>
+    <style name="ThemeOverlay.App.Toolbar" parent="">
+        <item name="colorControlNormal">?attr/colorOnPrimary</item>
+    </style>
+    <style name="ThemeOverlay.App.PopupMenu" parent="">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+</resources>
