@@ -29,6 +29,8 @@
     <string name="activity_main_post_desc_like">Like</string>
     <string name="activity_main_post_desc_comment">Comment</string>
     <string name="activity_main_post_desc_share">Share</string>
+    <string name="activity_main_post_desc_location">Open location</string>
+    <string name="activity_main_post_view_location">View location</string>
     <string name="activity_main_post_desc_bookmark">Bookmark</string>
     <string name="activity_main_post_likes">1,234 likes</string>
     <string name="activity_login_register">Register</string>
@@ -46,6 +48,7 @@
     <string name="add_post_pick_image">Tap to add a photo</string>
     <string name="add_post_hint_caption">Write a caption…</string>
     <string name="add_post_add_location">Add location</string>
+    <string name="add_post_location_added">Location added</string>
     <string name="add_post_tag_people">Tag people</string>
     <string name="add_post_share">Share</string>
     <string name="add_post_back">Back</string>
@@ -54,9 +57,22 @@
     <string name="add_post_select_from_gallery">Select Image from Gallery</string>
     <string name="add_post_select_title">Select Image</string>
     <string name="add_post_select_capture">Take Photo</string>
+    <string name="camera_permission_rationale">Camera access is needed.</string>
 
     <string name="activity_main_posts_no_available">No posts available.</string>
     <string name="activity_main_posts_err_loading">Error loading posts.</string>
+    <string name="activity_main_posts_loading">Loading posts...</string>
 
     <string name="cancel">Cancel</string>
+    <string name="error_not_authorized">You are not authorized to perform this action.</string>
+    <string name="error_generic">An error occurred: %1$s</string>
+
+    <!-- Profile screen strings -->
+    <string name="profile_change_avatar">Change avatar</string>
+    <string name="profile_username_hint">Full name</string>
+    <string name="profile_bio_hint">Bio</string>
+    <string name="profile_save">Save profile</string>
+    <string name="profile_my_posts">My posts</string>
+    <string name="profile_user_posts">Posts by %1$s</string>
+    <string name="profile_desc_edit_profile">Edit profile</string>
 </resources>

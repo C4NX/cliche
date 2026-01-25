@@ -18,7 +18,7 @@ You will also need supabase-cli installed. You can find the installation instruc
 supabase login
 supabase link --project-ref <your-project-ref>
 supabase start
-supabase functions start
+supabase functions serve
 ```
 
 And set `SUPABASE_URL` and `SUPABASE_ANON_KEY` with the values from the local supabase instance.

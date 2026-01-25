@@ -1,7 +1,7 @@
 package com.cliche.app.ui.home
 
 import android.annotation.SuppressLint
-import android.graphics.Color
+import android.content.Intent
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -17,6 +17,7 @@ import com.cliche.app.R
 import com.cliche.app.models.TimelinePost
 import com.cliche.app.services.api.PostApi
 import com.cliche.app.services.api.ProfileApi
+import androidx.core.net.toUri
 
 /**
  * Adapter pour l'affichage des posts dans un RecyclerView.
@@ -25,9 +26,12 @@ class PostsAdapter(
     private val items: MutableList<TimelinePost>,
     private val listener: OnPostActionListener? = null
 ) : RecyclerView.Adapter<PostsAdapter.ViewHolder>() {
+    val TAG = "PostsAdapter"
 
     /**
      * Interface pour gérer les actions sur les posts.
+     *
+     * @see PostsAdapter
      */
     interface OnPostActionListener {
         fun onLike(post: TimelinePost)
@@ -35,12 +39,8 @@ class PostsAdapter(
         fun onShare(post: TimelinePost)
         fun onBookmark(post: TimelinePost)
         fun onItemClick(post: TimelinePost)
+        fun onProfileClick(userId: String)
     }
-
-    /**
-     * Set des IDs des posts likés localement.
-     */
-    private val likedIds = mutableSetOf<Long>()
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivAvatar: ImageView = itemView.findViewById(R.id.ivAvatar)
@@ -51,6 +51,7 @@ class PostsAdapter(
         val ivLike: ImageView = itemView.findViewById(R.id.iv_like)
         val ivComment: ImageView = itemView.findViewById(R.id.iv_comment)
         val ivShare: ImageView = itemView.findViewById(R.id.iv_share)
+        val ivLocation: ImageView = itemView.findViewById(R.id.iv_location)
         val ivBookmark: ImageView = itemView.findViewById(R.id.iv_bookmark)
     }
 
@@ -85,20 +86,27 @@ class PostsAdapter(
         holder.tvLikes.text = "${post.likes_count} likes"
         holder.tvCaption.text = post.caption
 
-        // Gestion état de like
-        val isLiked = post.liked_by_user || likedIds.contains(post.id)
-        updateLikeState(holder, isLiked)
+        updateLikeState(holder, post.liked_by_user)
 
         // Listeners
         holder.ivLike.setOnClickListener { v ->
-            doLikeClickOnHolder(holder, post)
-
             try {
+                val alreadyLiked = post.liked_by_user
+
                 listener?.onLike(post)
+
+                if (alreadyLiked) {
+                    post.liked_by_user = false
+                    post.likes_count -= 1
+                } else {
+                    post.liked_by_user = true
+                    post.likes_count += 1
+                }
             } catch (e: Exception) {
-                Log.e("PostsAdapter", "Error in onLike callback: ${e.message}")
-                doLikeClickOnHolder(holder, post)
+                Log.e(TAG, "Error in onLike callback: ${e.message}")
                 Toast.makeText(v.context, "Error in onLike callback: ${e.message}", Toast.LENGTH_LONG).show()
+            } finally {
+                doLikeClickOnHolder(holder, post)
             }
         }
 
@@ -110,6 +118,24 @@ class PostsAdapter(
             listener?.onShare(post)
         }
 
+        val hasLocation = (post.latitude != null && post.longitude != null)
+        holder.ivLocation.visibility = if (hasLocation) View.VISIBLE else View.GONE
+        if (hasLocation) {
+            holder.ivLocation.setOnClickListener { v ->
+                try {
+                    val lat = post.latitude
+                    val lon = post.longitude
+                    // Use geo URI to open in map apps
+                    val uri = "geo:$lat,$lon?q=$lat,$lon".toUri()
+                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                    v.context.startActivity(intent)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error opening location: ${e.message}")
+                    Toast.makeText(v.context, "Unable to open location", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
         holder.ivBookmark.setOnClickListener {
             listener?.onBookmark(post)
         }
@@ -117,33 +143,28 @@ class PostsAdapter(
         holder.itemView.setOnClickListener {
             listener?.onItemClick(post)
         }
+
+        holder.ivAvatar.setOnClickListener {
+            listener?.onProfileClick(post.owner_id)
+        }
     }
 
     /**
      * Gère le clic sur le bouton "like" d'un post.
+     *
+     * @param holder Le ViewHolder du post.
+     * @param updatedPost Le post mis à jour (après le like).
      */
     @SuppressLint("SetTextI18n")
-    private fun doLikeClickOnHolder(holder: ViewHolder, post: TimelinePost) {
-        val nowLiked = if (likedIds.contains(post.id)) {
-            likedIds.remove(post.id)
-            false
-        } else {
-            likedIds.add(post.id)
-            true
-        }
-
+    private fun doLikeClickOnHolder(holder: ViewHolder, updatedPost: TimelinePost) {
         // Scale up puis revenir
         holder.ivLike.animate().scaleX(1.3f).scaleY(1.3f).setDuration(120).withEndAction {
             holder.ivLike.animate().scaleX(1f).scaleY(1f).setDuration(120).start()
         }.start()
 
         // Met à jour l'UI (couleur et nombre de likes)
-        updateLikeState(holder, nowLiked)
-        holder.tvLikes.text = if (nowLiked) {
-            post.likes_count + 1
-        } else {
-            post.likes_count - 1
-        }.toString() + " likes"
+        updateLikeState(holder, updatedPost.liked_by_user)
+        holder.tvLikes.text = updatedPost.likes_count.toString() + " likes"
     }
 
     override fun getItemCount(): Int = items.size

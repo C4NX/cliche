@@ -4,11 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.lifecycle.lifecycleScope
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.NavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.cliche.app.databinding.ActivityMainBinding
@@ -16,13 +21,16 @@ import com.cliche.app.modules.supabaseClient
 import com.cliche.app.services.auth.AuthManager
 import com.cliche.app.settings.SettingsActivity
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
+    // expose navController and appBarConfiguration to be used by onSupportNavigateUp
+    private lateinit var navController: NavController
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,18 +47,42 @@ class MainActivity : AppCompatActivity() {
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
-        val navController = navHostFragment.navController
+        this.navController = navHostFragment.navController
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
+        this.appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_map, R.id.navigation_notifications
             )
         )
 
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        setupActionBarWithNavController(this.navController, this.appBarConfiguration)
+        navView.setupWithNavController(this.navController)
+
+        // Show a '+' on the top-left (navigation icon) for top-level screens
+        val topLevelDestinations = setOf(
+            R.id.navigation_home,
+            R.id.navigation_map,
+            R.id.navigation_notifications
+        )
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (topLevelDestinations.contains(destination.id)) {
+                val icon = ContextCompat.getDrawable(this, R.drawable.material_symbols__add_a_photo_rounded)
+                if (icon != null) {
+                    DrawableCompat.setTint(icon, ContextCompat.getColor(this, android.R.color.white))
+                }
+                toolbar.navigationIcon = icon
+                toolbar.navigationContentDescription = getString(R.string.add_post_title)
+                toolbar.setNavigationOnClickListener {
+                    navController.navigate(R.id.navigation_add_post)
+                }
+            } else {
+                // For non top-level screens, keep default back/up behavior
+                toolbar.navigationContentDescription = null
+                toolbar.setNavigationOnClickListener { onSupportNavigateUp() }
+            }
+        }
 
         lifecycleScope.launch {
             supabaseClient.auth.sessionStatus.collect {
@@ -70,7 +102,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Appel unique pour création du menu Options
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.top_app_bar_menu, menu)
         return true
@@ -79,11 +110,10 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.profile -> {
-                Toast.makeText(this, "Profile clicked", Toast.LENGTH_SHORT).show()
+                navController.navigate(R.id.navigation_profile)
                 true
             }
             R.id.settings -> {
-                //Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
                 true
@@ -96,5 +126,10 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    // Ensure Up button works and is delegated to NavController
+    override fun onSupportNavigateUp(): Boolean {
+        return NavigationUI.navigateUp(navController, appBarConfiguration) || super.onSupportNavigateUp()
     }
 }

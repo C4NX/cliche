@@ -4,6 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Profile (
+    val id: String,
     val username: String,
-    val avatar_url: String,
+    val bio: String? = null,
+    val avatar_url: String? = null
 )
