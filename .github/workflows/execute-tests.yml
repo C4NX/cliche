@@ -1,0 +1,31 @@
+name: Execute tests
+
+on: [push, pull_request]
+
+jobs:
+  execute_tests:
+    name: Execute tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Write runner in local.properties
+        run: |
+          set -e
+          # Prefer runner-provided ANDROID_SDK_ROOT, otherwise fallback to a common path
+          SDK_DIR="${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}"
+          echo "sdk.dir=$SDK_DIR" > local.properties
+
+      - name: Execute tests
+        run: ./gradlew :app:testDebugUnitTest --no-daemon
