@@ -20,6 +20,11 @@ swiperefreshlayout = "1.2.0"
 playServicesLocation = "21.3.0"
 activityKtx = "1.9.2"
 uiText = "1.10.1"
+junitKtx = "1.3.0"
+robolectric = "4.10.3"
+coroutines = "1.7.3"
+androidxTestExt = "1.1.5"
+androidxTestCore = "1.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +51,11 @@ functions-kt = { module = "io.github.jan-tennert.supabase:functions-kt" }
 storage-kt = { module = "io.github.jan-tennert.supabase:storage-kt" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 androidx-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiText" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExt" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

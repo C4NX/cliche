@@ -34,6 +34,22 @@ android {
         buildConfigField("String", "TAG_NAME", "\"$tagName\"")
     }
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            // Forcer Robolectric à utiliser un SDK compatible (max 33) pour éviter l'erreur
+            all {
+                it.systemProperty("robolectric.defaultSdk", "33")
+            }
+        }
+    }
+
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -44,16 +60,23 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         buildConfig = true
         viewBinding = true
     }
+}
+
+// Force les tâches de test à utiliser le toolchain Java 17
+tasks.withType<Test>().configureEach {
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    })
 }
 
 dependencies {
@@ -69,7 +92,12 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.ui.text)
+    implementation(libs.androidx.junit.ktx)
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.kotlinx.coroutines.core)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
