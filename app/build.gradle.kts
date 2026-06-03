@@ -8,6 +8,10 @@ val localProperties = Properties().apply {
 val supabaseUrlProp = localProperties.getProperty("SUPABASE_URL") ?: ""
 val supabaseAnonKeyProp = localProperties.getProperty("SUPABASE_ANON_KEY") ?: ""
 
+val testSupabaseUrlProp = localProperties.getProperty("SUPABASE_TEST_URL")
+val testSupabaseAnonKeyProp = localProperties.getProperty("SUPABASE_TEST_ANON_KEY")
+val testSupabaseServiceRoleKeyProp = localProperties.getProperty("SUPABASE_TEST_SERVICE_ROLE_KEY")
+
 val tagName = localProperties.getProperty("TAG_NAME") ?: "@dev"
 
 plugins {
@@ -32,14 +36,17 @@ android {
         buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrlProp\"")
         buildConfigField("String", "SUPABASE_ANON_KEY", "\"$supabaseAnonKeyProp\"")
         buildConfigField("String", "TAG_NAME", "\"$tagName\"")
+
+        buildConfigField("String", "SUPABASE_TEST_URL", "\"${testSupabaseUrlProp ?: ""}\"")
+        buildConfigField("String", "SUPABASE_TEST_ANON_KEY", "\"${testSupabaseAnonKeyProp ?: ""}\"")
+        buildConfigField("String", "SUPABASE_TEST_SERVICE_ROLE_KEY", "\"${testSupabaseServiceRoleKeyProp ?: ""}\"")
     }
 
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
-            // Forcer Robolectric à utiliser un SDK compatible (max 33) pour éviter l'erreur
             all {
-                it.systemProperty("robolectric.defaultSdk", "33")
+                it.systemProperty("robolectric.defaultSdk", "34")
             }
         }
     }
@@ -72,15 +79,18 @@ android {
     }
 }
 
-// Force les tâches de test à utiliser le toolchain Java 17
 tasks.withType<Test>().configureEach {
     javaLauncher.set(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(17))
     })
+    
+    testLogging {
+        showStandardStreams = true
+        events("passed", "failed", "skipped")
+    }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.swiperefreshlayout)
@@ -88,7 +98,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-        implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.ui.text)
@@ -98,20 +108,19 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.multiplatform.settings.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
     implementation(platform(libs.supabase.bom))
     implementation(libs.postgrest.kt)
     implementation(libs.auth.kt)
     implementation(libs.realtime.kt)
     implementation(libs.functions.kt)
     implementation(libs.storage.kt)
-
     implementation(libs.ktor.client.okhttp)
-
     implementation(libs.coil)
-
     implementation(libs.androidx.preference.ktx)
     implementation(libs.play.services.location)
 }

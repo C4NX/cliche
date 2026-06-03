@@ -1,11 +1,13 @@
-name: Run Tests with Supabase
+name: Run tests (Kotlin with Supabase)
 
 on: [push]
 
 jobs:
   test:
-    name: Run Kotlin tests with Supabase
+    name: Run tests (Kotlin with Supabase)
     runs-on: ubuntu-latest
+    env:
+      DO_NOT_TRACK: 1
 
     steps:
       - name: Checkout Code
@@ -53,16 +55,16 @@ jobs:
       - name: Export Supabase Keys to Environment
         run: |
           supabase status -o env \
-            --override-name api.url=SUPABASE_URL \
-            --override-name auth.anon_key=SUPABASE_ANON_KEY \
-            --override-name auth.service_role_key=SUPABASE_SERVICE_ROLE_KEY \
-            >> $GITHUB_ENV
+            --override-name ANON_KEY=SUPABASE_ANON_KEY \
+            --override-name API_URL=SUPABASE_URL \
+            --override-name SERVICE_ROLE_KEY=SUPABASE_SERVICE_ROLE_KEY \
+            | tr -d '"' >> "$GITHUB_ENV"
 
       - name: Configure local.properties
         run: |
           SDK_DIR="${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}"
           echo "sdk.dir=$SDK_DIR" > local.properties
-          echo "SUPABASE_URL=$SUPABASE_URL" >> local.properties
+          echo "SUPABASE_TEST_URL=$SUPABASE_URL" >> local.properties
           echo "SUPABASE_TEST_ANON_KEY=$SUPABASE_ANON_KEY" >> local.properties
           echo "SUPABASE_TEST_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> local.properties
 

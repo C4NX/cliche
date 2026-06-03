@@ -20,5 +20,6 @@
     "fs",
     "http",
     "net"
-  ]
+  ],
+  "java.configuration.updateBuildConfiguration": "automatic"
 }

@@ -1,6 +1,7 @@
 package com.cliche.app
 
 import com.cliche.app.models.*
+import com.cliche.app.tests.SupabaseTestClientProviderTest
 import com.cliche.app.models.events.LikeEventTest
 import com.cliche.app.utils.LatLngTest
 import org.junit.runner.RunWith
@@ -22,5 +23,6 @@ import org.junit.runners.Suite
     
     // Utility tests
     LatLngTest::class,
+    SupabaseTestClientProviderTest::class
 )
 class AllUnitTests
