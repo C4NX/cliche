@@ -191,6 +191,10 @@ class PostsAdapter(
 
     override fun getItemCount(): Int = items.size
 
+    fun getItems(): MutableList<TimelinePost> {
+        return items
+    }
+
     fun addAll(newItems: List<TimelinePost>) {
         val start = items.size
         items.addAll(newItems)
