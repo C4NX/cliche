@@ -22,6 +22,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.cliche.app.databinding.ActivityMainBinding
 import com.cliche.app.modules.supabaseClient
+import com.cliche.app.services.api.AppApi
 import com.cliche.app.services.auth.AuthManager
 import com.cliche.app.settings.SettingsActivity
 import com.cliche.app.ui.posts.PostFragment
@@ -198,7 +199,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.logout -> {
                 lifecycleScope.launch {
-                    AuthManager.signOut()
+                    AppApi.authManager.signOut()
                 }
                 true
             }

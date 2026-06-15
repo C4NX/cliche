@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cliche.app.R
 import com.cliche.app.databinding.FragmentBookmarksBinding
+import com.cliche.app.services.api.AppApi
 import com.cliche.app.services.api.PostApi
 import com.cliche.app.ui.home.PostsAdapter
 import com.cliche.app.ui.home.TimelinePostActionListener
@@ -103,7 +104,7 @@ class BookmarksFragment : Fragment() {
 
                 Log.d(TAG, "Fetching bookmarked posts from $start to $end")
 
-                val posts = PostApi.fetchBookmarked(start.toLong(), end.toLong())
+                val posts = AppApi.postApi.fetchBookmarked(start.toLong(), end.toLong())
 
                 if (posts.isNotEmpty()) {
                     postsAdapter.addAll(posts)

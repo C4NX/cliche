@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import coil.load
 import com.cliche.app.R
 import com.cliche.app.databinding.FragmentBottomNewPostMenuBinding
+import com.cliche.app.services.api.AppApi
 import com.cliche.app.services.api.PostApi
 import com.cliche.app.utils.copyUriToGalleryTempFile
 import com.cliche.app.utils.CameraUtils
@@ -203,7 +204,7 @@ class NewPostFragment : Fragment() {
                     emptyList()
                 }
 
-                PostApi.createPost(caption, filePaths, selectedLocation)
+                AppApi.postApi.createPost(caption, filePaths, selectedLocation)
 
                 Toast.makeText(
                     requireContext(),

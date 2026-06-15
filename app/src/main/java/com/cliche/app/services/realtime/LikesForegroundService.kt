@@ -15,6 +15,7 @@ import android.app.PendingIntent
 import com.cliche.app.R
 import com.cliche.app.models.events.LikeEvent
 import com.cliche.app.modules.supabaseClient
+import com.cliche.app.services.api.AppApi
 import com.cliche.app.services.auth.AuthManager
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.realtime.RealtimeChannel
@@ -66,9 +67,9 @@ class LikesForegroundService : Service() {
         if (job?.isActive == true) return START_STICKY
         job = scope?.launch {
             try {
-                AuthManager.waitToBeReady()
+                AppApi.authManager.waitToBeReady()
 
-                val currentUser = AuthManager.getUserOrNull()
+                val currentUser = AppApi.authManager.getUserOrNull()
                 if (currentUser == null) {
                     Log.w(TAG, "Cannot start LikesRealtimeService: no authenticated user")
                     return@launch

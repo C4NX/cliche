@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.cliche.app.R
 import com.cliche.app.models.TimelinePost
+import com.cliche.app.services.api.AppApi
 import com.cliche.app.services.api.PostApi
 import com.cliche.app.ui.profile.ProfileFragment
 import com.cliche.app.ui.bookmarks.BookmarksFragment
@@ -28,10 +29,10 @@ class TimelinePostActionListener(
 
         fragment.viewLifecycleOwner.lifecycleScope.launch {
             if (post.liked_by_user) {
-                PostApi.unlike(post.id)
+                AppApi.postApi.unlike(post.id)
                 post.liked_by_user = false
             } else {
-                PostApi.like(post.id)
+                AppApi.postApi.like(post.id)
                 post.liked_by_user = true
             }
         }
@@ -55,13 +56,13 @@ class TimelinePostActionListener(
         fragment.viewLifecycleOwner.lifecycleScope.launch {
             try {
                 if (post.bookmarked_by_user) {
-                    PostApi.unbookmark(post.id)
+                    AppApi.postApi.unbookmark(post.id)
                     post.bookmarked_by_user = false
                     if (fragment is BookmarksFragment) {
                         fragment.removePostById(post.id)
                     }
                 } else {
-                    PostApi.bookmark(post.id)
+                    AppApi.postApi.bookmark(post.id)
                     post.bookmarked_by_user = true
                 }
             } catch (e: Exception) {

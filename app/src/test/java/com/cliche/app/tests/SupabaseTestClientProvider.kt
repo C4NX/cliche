@@ -1,4 +1,5 @@
 package com.cliche.app.tests
+
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
@@ -10,30 +11,32 @@ import io.github.jan.supabase.auth.MemoryCodeVerifierCache
 import io.github.jan.supabase.auth.MemorySessionManager
 
 /**
- * Fournit des clients Supabase partagés pour les tests.
+ * Fournit des clients Supabase **partagés** pour les tests.
+ * Gère deux instances :
+ * - **Client anonyme** : pour les opérations côté utilisateur.
+ * - **Client service-role** : pour les opérations administratives (accès complet).
  *
- * Cette fabrique crée et conserve deux instances distinctes :
- * - un client anonyme pour les opérations côté utilisateur
- * - un client service-role pour les opérations de service
+ * @throws IllegalStateException Si les clients ne sont pas initialisés avant utilisation.
  */
 object SupabaseTestClientProvider {
     private var anonClient: SupabaseClient? = null
     private var serviceClient: SupabaseClient? = null
 
     /**
-     * Crée un client Supabase configuré pour les besoins des tests.
+     * Crée un client Supabase configuré pour les tests.
+     * Désactive la persistance des sessions et utilise des caches en mémoire.
      *
-     * @param url URL de l'instance Supabase.
-     * @param key Clé d'accès utilisée pour l'authentification du client.
-     * @param scheme Schéma d'URI personnalisé utilisé par l'authentification.
-     * @return Un [SupabaseClient] prêt à l'emploi.
-     * @throws IllegalStateException Si le client ne peut pas être créé.
+     * @param url URL de l'instance Supabase (ex: `https://xxx.supabase.co`).
+     * @param key Clé d'API (anonyme ou service-role).
+     * @param scheme Schéma d'URI pour l'authentification (ex: `com.cliche.app`).
+     * @return [SupabaseClient] prêt à l'emploi.
+     * @throws IllegalStateException Si la création échoue.
      */
     private fun createClient(url: String, key: String, scheme: String): SupabaseClient {
-        try {
-            return createSupabaseClient(url, key) {
+        return try {
+            createSupabaseClient(supabaseUrl = url, supabaseKey = key) {
                 install(Auth) {
-                    autoSaveToStorage = false
+                    autoSaveToStorage = false  // Désactive la persistance (utiles pour les tests)
                     autoLoadFromStorage = false
                     sessionManager = MemorySessionManager()
                     codeVerifierCache = MemoryCodeVerifierCache()
@@ -46,19 +49,18 @@ object SupabaseTestClientProvider {
                 install(Realtime)
             }
         } catch (e: Exception) {
-            println("Error creating SupabaseClient: ${e.message}")
-            throw IllegalStateException("Failed to create SupabaseClient: ${e.message}", e)
+            throw IllegalStateException("Échec de la création du client Supabase : ${e.message}", e)
         }
     }
 
     /**
-     * Initialise les clients de test avec les valeurs fournies.
+     * Initialise les clients avec des valeurs explicites.
      *
      * @param url URL de Supabase.
-     * @param anonKey Clé anonyme utilisée pour le client public.
-     * @param serviceKey Clé service-role utilisée pour le client privilégié.
-     * @param scheme Schéma d'URI personnalisé utilisé par l'authentification.
-     * @throws IllegalArgumentException Si l'un des paramètres obligatoires est vide.
+     * @param anonKey Clé **anonyme** (pour le client public).
+     * @param serviceKey Clé **service-role** (pour le client admin).
+     * @param scheme Schéma d'URI (par défaut : `com.cliche.app`).
+     * @throws IllegalArgumentException Si un paramètre est vide.
      */
     fun init(
         url: String,
@@ -66,59 +68,70 @@ object SupabaseTestClientProvider {
         serviceKey: String,
         scheme: String = "com.cliche.app"
     ) {
-        require(url.isNotEmpty()) { "URL cannot be empty" }
-        require(anonKey.isNotEmpty()) { "Anon key cannot be empty" }
-        require(serviceKey.isNotEmpty()) { "Service key cannot be empty" }
+        require(url.isNotBlank()) { "L'URL ne peut pas être vide." }
+        require(anonKey.isNotBlank()) { "La clé anonyme ne peut pas être vide." }
+        require(serviceKey.isNotBlank()) { "La clé service-role ne peut pas être vide." }
 
         anonClient = createClient(url, anonKey, scheme)
-        println("Supabase Anon client created with URL: $url")
-
-        this.serviceClient = createClient(url, serviceKey, scheme)
-        println("Supabase Service client created with URL: $url")
+        serviceClient = createClient(url, serviceKey, scheme)
     }
 
     /**
-     * Initialise les clients de test à partir des constantes `BuildConfig`.
+     * Initialise les clients depuis les constantes **BuildConfig**.
+     * Requiert les champs suivants dans `com.cliche.app.BuildConfig` :
+     * - `SUPABASE_TEST_URL`
+     * - `SUPABASE_TEST_ANON_KEY`
+     * - `SUPABASE_TEST_SERVICE_ROLE_KEY`
      *
-     * Cette méthode lit `SUPABASE_TEST_URL`, `SUPABASE_TEST_ANON_KEY` et
-     * `SUPABASE_TEST_SERVICE_ROLE_KEY` depuis `com.cliche.app.BuildConfig`.
-     *
-     * @param scheme Schéma d'URI personnalisé utilisé par l'authentification.
-     * @throws IllegalStateException Si une des constantes attendues est absente.
+     * @param scheme Schéma d'URI (par défaut : `com.cliche.app`).
+     * @throws IllegalStateException Si une constante est manquante.
      */
     fun initFromBuildConfig(scheme: String = "com.cliche.app") {
-        val buildConfigClass = Class.forName("com.cliche.app.BuildConfig")
+        try {
+            val buildConfigClass = Class.forName("com.cliche.app.BuildConfig")
 
-        val url = try {
-            buildConfigClass
+            val url = buildConfigClass
                 .getDeclaredField("SUPABASE_TEST_URL")
                 .get(null) as String
-        } catch (_: Exception) {
-            throw IllegalStateException("Failed to retrieve SUPABASE_TEST_URL from BuildConfig")
-        }
 
-        val anonKey = try {
-            buildConfigClass
+            val anonKey = buildConfigClass
                 .getDeclaredField("SUPABASE_TEST_ANON_KEY")
                 .get(null) as String
-        } catch (_: Exception) {
-            throw IllegalStateException("Failed to retrieve SUPABASE_TEST_ANON_KEY from BuildConfig")
-        }
 
-        val serviceKey = try {
-            buildConfigClass
+            val serviceKey = buildConfigClass
                 .getDeclaredField("SUPABASE_TEST_SERVICE_ROLE_KEY")
                 .get(null) as String
-        } catch (_: Exception) {
-            throw IllegalStateException("Failed to retrieve SUPABASE_TEST_SERVICE_ROLE_KEY from BuildConfig")
-        }
 
-        init(url, anonKey, serviceKey, scheme)
+            init(url, anonKey, serviceKey, scheme)
+        } catch (e: Exception) {
+            throw IllegalStateException(
+                "Impossible de lire les constantes BuildConfig : ${e.message}",
+                e
+            )
+        }
     }
 
+    /**
+     * @return Client **anonyme** (pour les tests utilisateur).
+     * @throws IllegalStateException Si non initialisé.
+     */
     fun asAnon(): SupabaseClient =
-        anonClient ?: error("Anon SupabaseClient not initialized. Call init() first.")
+        anonClient ?: error("Client anonyme non initialisé. Appelez `init()` ou `initFromBuildConfig()` d'abord.")
 
+    /**
+     * @return Client **service-role** (pour les tests admin).
+     * @throws IllegalStateException Si non initialisé.
+     */
     fun asService(): SupabaseClient =
-        serviceClient ?: error("Service SupabaseClient not initialized. Call init() first.")
+        serviceClient
+            ?: error("Client service-role non initialisé. Appelez `init()` ou `initFromBuildConfig()` d'abord.")
+
+
+    /**
+     * Réinitialise les clients.
+     */
+    fun reset() {
+        anonClient = null
+        serviceClient = null
+    }
 }

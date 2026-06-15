@@ -18,6 +18,7 @@ import com.cliche.app.models.TimelinePost
 import com.cliche.app.services.api.PostApi
 import com.cliche.app.services.api.ProfileApi
 import androidx.core.net.toUri
+import com.cliche.app.services.api.AppApi
 
 /**
  * Adapter pour l'affichage des posts dans un RecyclerView.
@@ -65,7 +66,7 @@ class PostsAdapter(
         val post = items[position]
 
         holder.tvUsername.text = post.owner_username
-        val avatarUrl = ProfileApi.getPublicAvatarUrl(post.owner_avatar_url)
+        val avatarUrl = AppApi.profileApi.getPublicAvatarUrl(post.owner_avatar_url)
         holder.ivAvatar.load(avatarUrl) {
             crossfade(true)
             placeholder(R.drawable.ic_avatar_placeholder)
@@ -73,7 +74,7 @@ class PostsAdapter(
         }
 
         // Get all public image URLs & setup ViewPager
-        val publicPostUrls = PostApi.getPostPublicUrls(post) ?: emptyList()
+        val publicPostUrls = AppApi.postApi.getPostPublicUrls(post) ?: emptyList()
 
         if (publicPostUrls.isEmpty()) {
             holder.vpPostImages.visibility = View.GONE

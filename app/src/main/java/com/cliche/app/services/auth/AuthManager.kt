@@ -4,17 +4,21 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.cliche.app.LoginActivity
-import com.cliche.app.modules.supabaseClient
+import com.cliche.app.exceptions.UserNotAuthenticatedException
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.exceptions.UnauthorizedRestException
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 
 /**
  * Manages user authentication.
  */
-object AuthManager {
+class AuthManager(
+    private val supabaseClient: SupabaseClient
+) {
     /**
      * Performs classic email/password login.
      */
@@ -69,7 +73,6 @@ object AuthManager {
     suspend fun signOut() {
         supabaseClient.auth.signOut()
         Log.d("AuthManager", "User signed out")
-        //context.startActivity(Intent(context, LoginActivity::class.java))
     }
 
     /**
@@ -81,4 +84,13 @@ object AuthManager {
      * Returns the currently logged-in user, or null if no user is logged in.
      */
     fun getUserOrNull() = supabaseClient.auth.currentUserOrNull()
+
+    /**
+     * Requires a user ID, throwing an exception if no user is logged in.
+     * Used by PostApi for authenticated operations.
+     */
+    fun requireUserId(): String {
+        return supabaseClient.auth.currentUserOrNull()?.id
+            ?: throw UserNotAuthenticatedException()
+    }
 }

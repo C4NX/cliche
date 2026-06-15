@@ -2,35 +2,36 @@ package com.cliche.app.services.api
 
 import android.util.Log
 import com.cliche.app.models.Profile
-import com.cliche.app.modules.supabaseClient
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
-import java.io.File
 import io.github.jan.supabase.storage.storage
+import java.io.File
 
 /**
  * API for managing user profiles.
  */
-object ProfileApi {
-    private const val TAG = "ProfileApi"
+class ProfileApi(
+    private val supabaseClient: SupabaseClient
+) {
+    private val TAG = "ProfileApi"
 
     /**
      * Generates a public URL for the given avatar stored in Supabase Storage.
      */
     fun getPublicAvatarUrl(avatarUrl: String?): String? {
-        if (avatarUrl == null || avatarUrl.isEmpty()) {
+        if (avatarUrl.isNullOrEmpty()) {
             return null
         }
-
         return supabaseClient.storage
             .from("avatars")
             .publicUrl(avatarUrl)
     }
 
     /**
-     * Récupère le profil de l'utilisateur par son ID.
+     * Fetches the user profile by its ID.
      *
-     * @param userId L'ID de l'utilisateur.
-     * @return Le profil de l'utilisateur ou null s'il n'existe pas.
+     * @param userId The user ID.
+     * @return The user profile or null if it doesn't exist.
      */
     suspend fun fetchProfile(userId: String): Profile? {
         Log.d(TAG, "Fetching profile for $userId")
@@ -48,12 +49,12 @@ object ProfileApi {
     }
 
     /**
-     * Met à jour le profil de l'utilisateur.
+     * Updates the user profile.
      *
-     * @param userId L'ID de l'utilisateur.
-     * @param username Le nouveau nom d'utilisateur (nullable).
-     * @param bio La nouvelle biographie (nullable).
-     * @param avatarPath Le chemin de l'avatar dans le stockage (nullable).
+     * @param userId The user ID.
+     * @param username The new username (nullable).
+     * @param bio The new bio (nullable).
+     * @param avatarPath The avatar path in storage (nullable).
      */
     suspend fun updateProfile(
         userId: String,

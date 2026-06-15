@@ -3,12 +3,10 @@ package com.cliche.app.services.api
 import android.util.Log
 import com.cliche.app.models.Like
 import com.cliche.app.models.Bookmark
-import com.cliche.app.models.Post
 import com.cliche.app.models.TimelinePost
-import com.cliche.app.modules.supabaseClient
 import com.cliche.app.services.auth.AuthManager
 import com.cliche.app.utils.LatLng
-import com.cliche.app.utils.requireUserId
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.UnauthorizedRestException
 import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.postgrest.postgrest
@@ -28,8 +26,13 @@ import java.io.File
 /**
  * API for managing posts.
  */
-object PostApi {
-    const val TAG = "PostApi"
+class PostApi(
+    private val supabaseClient: SupabaseClient,
+    private val authManager: AuthManager
+) {
+    companion object {
+        const val TAG = "PostApi"
+    }
 
     /**
      * Fetch a single post by its id from the timeline view.
@@ -101,7 +104,7 @@ object PostApi {
      * Creates a new post with the given caption and media files.
      */
     suspend fun createPost(caption: String, filePaths: List<String>, location: LatLng? = null) {
-        val userId = requireUserId()
+        val userId = authManager.requireUserId()
         Log.d(TAG, "Creating post by user $userId")
 
         val response = supabaseClient.functions.invoke(function = "create-post") {
@@ -133,13 +136,14 @@ object PostApi {
                             }
 
                             // Upload file as multipart form data
-                            val stream = file.inputStream()
-                            append(
-                                key = "media",
-                                filename = file.name,
-                                contentType = contentType,
-                            ) {
-                                writePacket(stream.asInput())
+                            file.inputStream().use { stream ->
+                                append(
+                                    key = "media",
+                                    filename = file.name,
+                                    contentType = contentType,
+                                ) {
+                                    writePacket(stream.asInput())
+                                }
                             }
                         }
                     }
@@ -160,7 +164,7 @@ object PostApi {
      * @param postId The ID of the post to like.
      */
     suspend fun like(postId: Long) {
-        val userId = requireUserId()
+        val userId = authManager.requireUserId()
 
         supabaseClient.postgrest
             .from("likes")
@@ -178,7 +182,7 @@ object PostApi {
      * @param postId The ID of the post to unlike.
      */
     suspend fun unlike(postId: Long) {
-        val userId = requireUserId()
+        val userId = authManager.requireUserId()
 
         supabaseClient.postgrest
             .from("likes")
@@ -190,14 +194,13 @@ object PostApi {
             }
     }
 
-
     /**
      * Bookmarks a post for the current user.
      *
      * @param postId The ID of the post to bookmark.
      */
     suspend fun bookmark(postId: Long) {
-        val userId = requireUserId()
+        val userId = authManager.requireUserId()
 
         supabaseClient.postgrest
             .from("bookmarks")
@@ -215,7 +218,7 @@ object PostApi {
      * @param postId The ID of the post to unbookmark.
      */
     suspend fun unbookmark(postId: Long) {
-        val userId = requireUserId()
+        val userId = authManager.requireUserId()
 
         supabaseClient.postgrest
             .from("bookmarks")
@@ -227,14 +230,13 @@ object PostApi {
             }
     }
 
-
     /**
      * Generates public URLs for the media files associated with a post.
      *
      * @param post The TimelinePost object containing media paths.
      * @return A list of public URLs for the media files, or null if there are no media paths.
      */
-    fun getPostPublicUrls(post: TimelinePost): List<String>? {
+    fun getPostPublicUrls(post: TimelinePost): List<String> {
         return post.media_paths.map {
             supabaseClient.storage
                 .from("posts")

@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.cliche.app.services.api.AppApi
 import com.cliche.app.services.auth.AuthManager
 import com.cliche.app.utils.setVisible
 import com.google.android.material.tabs.TabLayout
@@ -42,8 +43,8 @@ class LoginActivity: AppCompatActivity() {
 
         // Wait for authentication manager to be ready
         lifecycleScope.launch {
-            AuthManager.waitToBeReady()
-            val restoredUser = AuthManager.getUserOrNull()
+            AppApi.authManager.waitToBeReady()
+            val restoredUser = AppApi.authManager.getUserOrNull()
             if(restoredUser != null){
                 Log.d(TAG, "Auth state restored for user id: ${restoredUser.id}")
 
@@ -79,7 +80,7 @@ class LoginActivity: AppCompatActivity() {
                     val password = passwordInput.text.toString()
                     val username = usernameInput.text.toString()
 
-                    AuthManager.register(email, password, username)
+                    AppApi.authManager.register(email, password, username)
                     closeAndStartMainActivity()
                 } catch (e: Exception) {
                     Toast.makeText(
@@ -102,7 +103,7 @@ class LoginActivity: AppCompatActivity() {
                     val email = emailInput.text.toString()
                     val password = passwordInput.text.toString()
 
-                    AuthManager.login(email, password)
+                    AppApi.authManager.login(email, password)
                     closeAndStartMainActivity()
                 } catch (e: Exception) {
                     Toast.makeText(
@@ -122,7 +123,7 @@ class LoginActivity: AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    AuthManager.loginWithGoogle(this@LoginActivity)
+                    AppApi.authManager.loginWithGoogle(this@LoginActivity)
                 } catch (e: Exception) {
                     Toast.makeText(
                         this@LoginActivity,

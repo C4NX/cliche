@@ -3,12 +3,12 @@ package com.cliche.app.ui.profile
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import android.view.Gravity
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -16,9 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.cliche.app.R
 import com.cliche.app.databinding.FragmentProfileBinding
+import com.cliche.app.models.Profile
+import com.cliche.app.services.api.AppApi.postApi
+import com.cliche.app.services.api.AppApi.profileApi
 import com.cliche.app.services.api.PostApi
 import com.cliche.app.services.api.ProfileApi
-import com.cliche.app.models.Profile
 import com.cliche.app.ui.home.PostsAdapter
 import com.cliche.app.ui.home.TimelinePostActionListener
 import com.cliche.app.utils.CameraUtils
@@ -189,21 +191,21 @@ class ProfileFragment : Fragment() {
 
                 Log.d(TAG, "Loading profile and posts for user $profileUserId (current user: ${requireUserId()})")
 
-                profile = ProfileApi.fetchProfile(profileUserId)
+                profile = profileApi.fetchProfile(profileUserId)
                 if (profile != null) {
                     binding.tvUsername.text = profile!!.username
                     binding.etUsername.setText(profile!!.username)
                     binding.etBio.setText(profile!!.bio ?: "")
                     binding.tvBio.text = profile!!.bio ?: ""
 
-                    val avatarUrl = ProfileApi.getPublicAvatarUrl(profile!!.avatar_url)
+                    val avatarUrl = profileApi.getPublicAvatarUrl(profile!!.avatar_url)
                     binding.ivAvatar.load(avatarUrl) {
                         placeholder(R.drawable.ic_avatar_placeholder)
                         error(R.drawable.ic_avatar_placeholder)
                     }
                 }
 
-                val posts = PostApi.fetchPostsByOwner(profileUserId, 0, 50)
+                val posts = postApi.fetchPostsByOwner(profileUserId, 0, 50)
                 profilePostsAdapter.clear()
                 profilePostsAdapter.addAll(posts)
 
@@ -265,11 +267,11 @@ class ProfileFragment : Fragment() {
                 if (wantsAvatarChange) {
                     val localPath = if (photoFile != null) photoFile!!.absolutePath else copyUriToGalleryTempFile(requireContext(), selectedImageUri!!).absolutePath
                     val path = "${userId}/avatar_${System.currentTimeMillis()}.jpg"
-                    ProfileApi.uploadAvatar(localPath, path)
+                    profileApi.uploadAvatar(localPath, path)
                     avatarChange = path
                 }
 
-                ProfileApi.updateProfile(userId, usernameChange, bioChange, avatarChange)
+                profileApi.updateProfile(userId, usernameChange, bioChange, avatarChange)
                 Toast.makeText(requireContext(), "Profile updated", Toast.LENGTH_SHORT).show()
                 isEditMode = false
                 selectedImageUri = null

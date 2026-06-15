@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.cliche.app.R
 import com.cliche.app.databinding.FragmentPostBinding
 import com.cliche.app.models.TimelinePost
+import com.cliche.app.services.api.AppApi
 import com.cliche.app.services.api.PostApi
 import com.cliche.app.ui.home.PostsAdapter
 import com.cliche.app.ui.home.TimelinePostActionListener
@@ -59,7 +60,7 @@ class PostFragment : Fragment() {
         showLoading(true)
         lifecycleScope.launch {
             try {
-                post = PostApi.fetchPostById(postId)
+                post = AppApi.postApi.fetchPostById(postId)
                 if (post == null) {
                     showError(getString(R.string.error_generic, "Post not found"))
                     return@launch

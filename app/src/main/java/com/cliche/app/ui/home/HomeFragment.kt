@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cliche.app.R
 import com.cliche.app.databinding.FragmentHomeBinding
 import com.cliche.app.models.TimelinePost
+import com.cliche.app.services.api.AppApi
 import com.cliche.app.services.api.PostApi
 import com.cliche.app.ui.profile.ProfileFragment
 import kotlinx.coroutines.CancellationException
@@ -129,7 +130,7 @@ class HomeFragment : Fragment() {
 
                 Log.d(TAG, "Fetching posts from $start to $end")
 
-                val posts = PostApi.fetchTimeline(start.toLong(), end.toLong())
+                val posts = AppApi.postApi.fetchTimeline(start.toLong(), end.toLong())
 
                 if (posts.isNotEmpty()) {
                     postsAdapter.addAll(posts)
