@@ -42,7 +42,7 @@ jobs:
           if [ ! -d "supabase" ]; then
             supabase init
           fi
-          supabase start &
+          supabase start
           echo "Waiting for all Supabase services to be ready..."
           for i in {1..60}; do
             if supabase status >/dev/null 2>&1; then

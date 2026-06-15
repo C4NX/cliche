@@ -9,6 +9,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
+import kotlinx.coroutines.test.resetMain
 import java.util.UUID
 
 abstract class SupabaseTestBase {
@@ -21,9 +22,11 @@ abstract class SupabaseTestBase {
             SupabaseTestClientProvider.initFromBuildConfig()
         }
 
+        @OptIn(ExperimentalCoroutinesApi::class)
         @AfterClass
         @JvmStatic
         fun tearDownAll() {
+            Dispatchers.resetMain();
             SupabaseTestClientProvider.reset()
         }
     }
