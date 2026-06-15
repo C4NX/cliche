@@ -55,9 +55,9 @@ jobs:
       - name: Export Supabase Keys to Environment
         run: |
           supabase status -o env \
-            --override-name ANON_KEY=SUPABASE_ANON_KEY \
-            --override-name API_URL=SUPABASE_URL \
-            --override-name SERVICE_ROLE_KEY=SUPABASE_SERVICE_ROLE_KEY \
+            --override-name api.url=SUPABASE_URL \
+            --override-name auth.anon_key=SUPABASE_ANON_KEY \
+            --override-name auth.service_role_key=SUPABASE_SERVICE_ROLE_KEY \
             | tr -d '"' >> "$GITHUB_ENV"
 
       - name: Configure local.properties
