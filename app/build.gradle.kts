@@ -98,6 +98,8 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.test.ext.junit)
+    testImplementation("androidx.fragment:fragment-testing:1.8.9")
+    debugImplementation("androidx.fragment:fragment-testing-manifest:1.8.9")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
